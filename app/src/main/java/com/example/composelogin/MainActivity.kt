@@ -13,15 +13,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +34,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -72,161 +77,198 @@ fun MainSignUpScreen() {
             .background(color = LocalStuddyColors.current.primary700)
             .statusBarsPadding()
     ) {
-        StuddyLogoStartUpScreen()
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) { StuddyLogoStartUpScreen() }
         SignUpContainer()
     }
 }
 
 @Composable
 fun SignUpContainer() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .background(
-                    Color.White,
-                    shape = RoundedCornerShape(topStart = 58.dp, topEnd = 58.dp)
-                )
-                .padding(vertical = 72.dp)
-//                .padding(bottom = 72.dp)
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
+    val text: AnnotatedString = buildAnnotatedString {
+        append("already have an account? ")
+        pushStringAnnotation(tag = "click", annotation = "click")
+        withStyle(
+            SpanStyle(
+                textDecoration = TextDecoration.Underline,
+            )
         ) {
-            // Sign Up large text
-            Text(
-                fontFamily = fredokaFamily,
-                fontWeight = FontWeight.Medium,
-                text = "Sign Up",
-                fontSize = 32.sp,
-                color = LocalStuddyColors.current.lightNeutral600,
-                textAlign = TextAlign.Center
+            append("Login")
+        }
+        pop()
+    }
+    val context = LocalContext.current
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .background(
+                Color.White,
+                shape = RoundedCornerShape(topStart = 58.dp, topEnd = 58.dp)
             )
+            .padding(vertical = 72.dp)
+            .fillMaxWidth()
+            .navigationBarsPadding()
 
-            // Copyright statement
-            Text(
-                text = buildAnnotatedString {
-                    append("By signing up, you agree to our ")
-                    withStyle(
-                        style = SpanStyle(
-                            fontWeight = FontWeight.Medium,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    ) {
-                        append("terms")
-                    }
-                    append(". Learn how we process in our ")
-                    withStyle(
-                        style = SpanStyle(
-                            fontWeight = FontWeight.Medium,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    ) {
-                        append("Privacy Policy")
-                    }
-                    append(" and ")
-                    withStyle(
-                        style = SpanStyle(
-                            fontWeight = FontWeight.Medium,
-                            textDecoration = TextDecoration.Underline
-                        )
-                    ) {
-                        append("Cookies Policy")
-                    }
-                    append(".")
-                },
+    ) {
+        // Sign Up large text
+        Text(
+            fontFamily = fredokaFamily,
+            fontWeight = FontWeight.Medium,
+            text = "Sign Up",
+            fontSize = 32.sp,
+            color = LocalStuddyColors.current.lightNeutral600,
+            textAlign = TextAlign.Center
+        )
 
-                fontFamily = quicksandFamily,
-                fontSize = 10.sp,
-                color = LocalStuddyColors.current.lightNeutral600,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.width(266.dp)
-            )
-
-            // Input Fields for Sign Up
-            StuddyTextFieldGray("Username", "Type Here")
-            StuddyTextFieldGray("Email Address", "Type here")
-            StuddyTextFieldGray("Password", "Type here", isPassword = true)
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val context = LocalContext.current
-            StuddyButtonBlue(
-                content = "Sign Up",
-                onClick = {
-                    context.startActivity(Intent(context, LoginActivityDraft::class.java))
-                }
-            )
-
-//            Spacer(modifier = Modifier.height(8.dp))
-
-            // Other Sign Up Methods
-            Row(
-                modifier = Modifier.width(265.dp),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                val iconButtonOuterSize: Dp = 48.dp
-                val iconPadding: Dp = 8.dp
-                val iconInnerSize: Dp = 30.dp
-                IconButton(
-                    onClick = {}, modifier = Modifier
-                        .size(iconButtonOuterSize)
-                        .background(color = Color.White)
+        // Copyright statement
+        Text(
+            text = buildAnnotatedString {
+                append("By signing up, you agree to our ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium,
+                        textDecoration = TextDecoration.Underline
+                    )
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.White,
-                        shadowElevation = 2.dp,
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_google),
-                            contentDescription = "sign up with Google",
-                            modifier = Modifier
-                                .size(iconInnerSize + iconPadding)
-                                .padding(iconPadding)
-                        )
-                    }
+                    append("terms")
                 }
-
-                IconButton(onClick = {}, modifier = Modifier.size(48.dp)) {
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.White,
-                        shadowElevation = 2.dp,
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_facebook),
-                            contentDescription = "sign up with Facebook",
-                            modifier = Modifier
-                                .size(iconInnerSize + iconPadding)
-                                .padding(iconPadding)
-                        )
-                    }
+                append(". Learn how we process in our ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("Privacy Policy")
                 }
+                append(" and ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("Cookies Policy")
+                }
+                append(".")
+            },
 
-                IconButton(onClick = {}, modifier = Modifier.size(48.dp)) {
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.White,
-                        shadowElevation = 2.dp,
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_apple),
-                            contentDescription = "sign up with Apple",
-                            modifier = Modifier
-                                .size(iconInnerSize + iconPadding)
-                                .padding(iconPadding)
-                        )
-                    }
+            fontFamily = quicksandFamily,
+            fontSize = 10.sp,
+            color = LocalStuddyColors.current.lightNeutral600,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.width(266.dp)
+        )
+
+        // Input Fields for Sign Up
+        StuddyTextFieldGray("Username", "Type Here")
+        StuddyTextFieldGray("Email Address", "Type here")
+        StuddyTextFieldGray("Password", "Type here", isPassword = true)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        StuddyButtonBlue(
+            content = "Sign Up",
+            onClick = {
+                context.startActivity(Intent(context, NewAccountProfileSetUp::class.java))
+            }
+        )
+
+        Text(
+            text = "or sign up using",
+            fontSize = 12.sp,
+            fontFamily = quicksandFamily,
+            fontWeight = FontWeight.Medium,
+            color = LocalStuddyColors.current.lightNeutral700
+        )
+
+        // Other Sign Up Methods
+        Row(
+            modifier = Modifier.width(265.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            val iconButtonOuterSize: Dp = 48.dp
+            val iconPadding: Dp = 8.dp
+            val iconInnerSize: Dp = 30.dp
+            IconButton(
+                onClick = {}, modifier = Modifier
+                    .size(iconButtonOuterSize)
+                    .background(color = Color.White)
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White,
+                    shadowElevation = 2.dp,
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_google),
+                        contentDescription = "sign up with Google",
+                        modifier = Modifier
+                            .size(iconInnerSize + iconPadding)
+                            .padding(iconPadding)
+                    )
+                }
+            }
+
+            IconButton(onClick = {}, modifier = Modifier.size(48.dp)) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White,
+                    shadowElevation = 2.dp,
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_facebook),
+                        contentDescription = "sign up with Facebook",
+                        modifier = Modifier
+                            .size(iconInnerSize + iconPadding)
+                            .padding(iconPadding)
+                    )
+                }
+            }
+
+            IconButton(onClick = {}, modifier = Modifier.size(48.dp)) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color.White,
+                    shadowElevation = 2.dp,
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_apple),
+                        contentDescription = "sign up with Apple",
+                        modifier = Modifier
+                            .size(iconInnerSize + iconPadding)
+                            .padding(iconPadding)
+                    )
                 }
             }
         }
+
+        // already have an account clickable
+        ClickableText(
+            style = TextStyle(
+                fontFamily = quicksandFamily,
+                fontWeight = FontWeight.Medium,
+                fontSize = 12.sp,
+                color = LocalStuddyColors.current.lightNeutral600
+            ),
+            text = text,
+            onClick = { offset ->
+                text.getStringAnnotations(tag = "click", start = offset, end = offset)
+                    .firstOrNull()
+                    ?.let {
+                        context.startActivity(Intent(context, LoginActivityDraft::class.java))
+                    }
+            }
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewMainLoginScreen() {
-//    StuddyTextField("username", "Enter Username")
     MainSignUpScreen()
 }

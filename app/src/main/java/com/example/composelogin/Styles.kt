@@ -1,9 +1,12 @@
 package com.example.composelogin
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -55,9 +58,9 @@ import com.example.composelogin.ui.theme.quicksandFamily
 fun StuddyLogoStartUpScreen() {
     Image(
         painter = painterResource(id = R.drawable.studdylogo_with_text_bitmap),
-        contentDescription = null,
+        contentDescription = "studdy logo start up screen",
         modifier = Modifier
-            .padding(vertical = 72.dp)
+//            .padding(vertical = 36.dp)
             .width(296.dp)
             .height(102.dp)
             .border(width = 1.dp, color = LocalStuddyColors.current.primary700)
@@ -269,7 +272,7 @@ fun StuddyTextFieldGray(
 @Composable
 fun StuddyOrangeToggleSwitch(
     isChecked: Boolean,
-){
+) {
 
 }
 

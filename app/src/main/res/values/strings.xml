@@ -3,4 +3,5 @@
     <string name="title_activity_global_composables">GlobalComposables</string>
     <string name="title_activity_login_first_design">LoginActivityFirstDesign</string>
     <string name="title_activity_login_draft">LoginActivityDraft</string>
+    <string name="title_activity_new_account_profile_set_up">NewAccountProfileSetUp</string>
 </resources>
