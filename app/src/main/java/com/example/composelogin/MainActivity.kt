@@ -29,6 +29,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
@@ -87,6 +91,9 @@ fun MainSignUpScreen() {
 
 @Composable
 fun SignUpContainer() {
+    var username by remember{ mutableStateOf("") }
+    var email by remember{ mutableStateOf("") }
+    var password by remember{ mutableStateOf("") }
     val text: AnnotatedString = buildAnnotatedString {
         append("already have an account? ")
         pushStringAnnotation(tag = "click", annotation = "click")
@@ -165,9 +172,9 @@ fun SignUpContainer() {
         )
 
         // Input Fields for Sign Up
-        StuddyTextFieldGray("Username", "Type Here")
-        StuddyTextFieldGray("Email Address", "Type here")
-        StuddyTextFieldGray("Password", "Type here", isPassword = true)
+        StuddyTextFieldGray(value = username, onValueChange = {username = it}, label = "Username")
+        StuddyTextFieldGray(value = email, onValueChange = {email = it}, label = "Email Address")
+        StuddyTextFieldGray(value = password, onValueChange = {password = it}, label = "Password", isPassword = true)
 
         Spacer(modifier = Modifier.height(16.dp))
 

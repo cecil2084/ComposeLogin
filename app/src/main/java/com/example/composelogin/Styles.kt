@@ -1,8 +1,17 @@
 package com.example.composelogin
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,6 +21,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
@@ -24,9 +34,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
@@ -34,6 +46,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -43,16 +56,21 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composelogin.ui.theme.quicksandFamily
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @Composable
 fun StuddyLogoStartUpScreen() {
@@ -71,9 +89,11 @@ fun StuddyLogoStartUpScreen() {
 fun StuddyButtonBlue(
     content: String,
     onClick: () -> Unit,
-    width: Dp = 265.dp
+    width: Dp = 265.dp,
+    enabled: Boolean = true
 ) {
     Button(
+        enabled = enabled,
         onClick = onClick,
         modifier = Modifier
             .width(width),
@@ -104,9 +124,11 @@ fun StuddyButtonBlue(
 fun StuddyButtonWhite(
     content: String,
     onClick: () -> Unit,
-    width: Dp = 265.dp
+    width: Dp = 265.dp,
+    enabled: Boolean = true
 ) {
     Button(
+        enabled = enabled,
         onClick = onClick,
         modifier = Modifier
             .width(width),
@@ -135,12 +157,12 @@ fun StuddyButtonWhite(
 
 @Composable
 fun StuddyTextFieldGray(
+    value: String,
+    onValueChange: (String) -> Unit,
     label: String,
-    placeholder: String,
-    textValue: String = "",
+    placeholder: String = "Type Here",
     isPassword: Boolean = false
 ) {
-    var text by remember { mutableStateOf(textValue) }
     var passwordVisible by remember { mutableStateOf((false)) }
     var isFocused by remember {
         mutableStateOf(false)
@@ -208,10 +230,8 @@ fun StuddyTextFieldGray(
             }
 
             BasicTextField(
-                value = text,
-                onValueChange = {
-                    text = it
-                },
+                value = value,
+                onValueChange = onValueChange,
                 onTextLayout = { },
                 textStyle = TextStyle(
                     fontSize = 14.sp,
@@ -248,7 +268,7 @@ fun StuddyTextFieldGray(
                         isFocused = focusState.isFocused
                     },
                 decorationBox = { innerTextField ->
-                    if (text.isEmpty()) {
+                    if (value.isEmpty()) {
                         BasicText(
                             text = placeholder,
                             style = TextStyle(
@@ -270,10 +290,138 @@ fun StuddyTextFieldGray(
 }
 
 @Composable
-fun StuddyOrangeToggleSwitch(
-    isChecked: Boolean,
+fun StuddyTextFieldWhite(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    placeholder: String = "Type Here",
+    isPassword: Boolean = false
 ) {
+    var passwordVisible by remember { mutableStateOf((false)) }
+    var isFocused by remember {
+        mutableStateOf(false)
+    }
 
+    val paddingVertical: Dp = 12.dp
+    val paddingHorizontal: Dp = 20.dp
+    val inputFieldAdditionalPaddingPassword: Dp = if (isPassword) 24.dp else 0.dp
+    val borderColor: Color = Color.White
+    val strokeWidth: Float =
+        with(LocalDensity.current) { if (!isFocused) 1.dp.toPx() else 2.dp.toPx() }
+    val borderRadius: Float = with(LocalDensity.current) { 20.dp.toPx() }
+    val leftCutPosition: Float = with(LocalDensity.current) { 32.dp.toPx() }
+    val labelCutoutPadding: Float = with(LocalDensity.current) { 6.dp.toPx() }
+    val labelColor: Color = Color.White
+    val labelTextSize: TextUnit = 10.sp
+    val labelTextSizeDp: Dp = with(LocalDensity.current) { labelTextSize.toDp() }
+    val labelFontWeight: FontWeight = if (!isFocused) FontWeight.Medium else FontWeight.Bold
+    val labelStyle = TextStyle(
+        fontSize = 10.sp,
+        fontFamily = quicksandFamily,
+        fontWeight = labelFontWeight,
+        color = labelColor
+    )
+    val labelTextWidth: Float = with(LocalDensity.current) {
+        rememberTextMeasurer().measure(
+            label,
+            labelStyle
+        ).size.width.toDp().toPx()
+    }
+    Box {
+        BasicText(
+            text = label,
+            style = labelStyle,
+            modifier = Modifier.offset(32.dp, 0.dp)
+        )
+        Box(modifier = Modifier.padding(top = labelTextSizeDp / 2)) {
+            if (isPassword) {
+                val passwordEyeVisible: ImageVector =
+                    ImageVector.vectorResource(id = R.drawable.eyecon_hidden)
+                val passwordEyeHidden: ImageVector =
+                    ImageVector.vectorResource(id = R.drawable.eyecon_visible)
+                val eyeconColor: Color =
+                    if (!isFocused) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.primary800
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 10.dp)
+                        .size(30.dp)
+                ) {
+                    IconButton(onClick = {
+                        passwordVisible = !passwordVisible
+                    }) {
+                        val passwordEyecon =
+                            if (passwordVisible) passwordEyeHidden else passwordEyeVisible
+                        Icon(
+                            modifier = Modifier.width(20.dp),
+                            imageVector = passwordEyecon,
+                            contentDescription = "hide password",
+                            tint = eyeconColor
+                        )
+                    }
+                }
+            }
+
+            BasicTextField(
+                cursorBrush = SolidColor(Color.White),
+                value = value,
+                onValueChange = onValueChange,
+                onTextLayout = { },
+                textStyle = TextStyle(
+                    fontSize = 14.sp,
+                    color = Color.White,
+                    fontFamily = quicksandFamily,
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier
+                    .drawBehind {
+                        clipRect(
+                            top = 0f,
+                            left = leftCutPosition - labelCutoutPadding,
+                            bottom = strokeWidth * 2,
+                            right = leftCutPosition + labelCutoutPadding + labelTextWidth,
+                            clipOp = ClipOp.Difference
+                        ) {
+                            drawRoundRect(
+                                color = borderColor,
+                                topLeft = Offset(strokeWidth, strokeWidth),
+                                size = Size(
+                                    size.width - strokeWidth * 2,
+                                    size.height - strokeWidth * 2
+                                ),
+                                cornerRadius = CornerRadius(borderRadius, borderRadius),
+                                style = Stroke(width = strokeWidth)
+                            )
+                        }
+
+                    }
+                    .width(265.dp)
+                    .padding(vertical = paddingVertical, horizontal = paddingHorizontal)
+                    .padding(end = inputFieldAdditionalPaddingPassword)
+                    .onFocusChanged { focusState ->
+                        isFocused = focusState.isFocused
+                    },
+                decorationBox = { innerTextField ->
+                    if (value.isEmpty()) {
+                        BasicText(
+                            text = placeholder,
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                color = LocalStuddyColors.current.primary600,
+                                fontFamily = quicksandFamily,
+                                fontWeight = FontWeight.Medium
+                            )
+                        )
+                    }
+                    innerTextField()
+                },
+                singleLine = true,
+                visualTransformation = if (!isPassword || passwordVisible) VisualTransformation.None else StuddyPasswordVisualTransformation(),
+
+                )
+        }
+    }
 }
 
 class StuddyPasswordVisualTransformation(
@@ -286,5 +434,252 @@ class StuddyPasswordVisualTransformation(
             )
         )
         return TransformedText(maskedString, OffsetMapping.Identity)
+    }
+}
+
+@Composable
+fun StuddyDropDownTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String
+) {
+    var passwordVisible by remember { mutableStateOf((false)) }
+    var isFocused by remember {
+        mutableStateOf(false)
+    }
+
+    val paddingVertical: Dp = 12.dp
+    val paddingHorizontal: Dp = 20.dp
+    val borderColor: Color = Color.White
+    val strokeWidth: Float =
+        with(LocalDensity.current) { if (!isFocused) 1.dp.toPx() else 2.dp.toPx() }
+    val borderRadius: Float = with(LocalDensity.current) { 20.dp.toPx() }
+    val leftCutPosition: Float = with(LocalDensity.current) { 32.dp.toPx() }
+    val labelCutoutPadding: Float = with(LocalDensity.current) { 6.dp.toPx() }
+    val labelColor: Color = Color.White
+    val labelTextSize: TextUnit = 10.sp
+    val labelTextSizeDp: Dp = with(LocalDensity.current) { labelTextSize.toDp() }
+    val labelFontWeight: FontWeight = if (!isFocused) FontWeight.Medium else FontWeight.Bold
+    val labelStyle = TextStyle(
+        fontSize = 10.sp,
+        fontFamily = quicksandFamily,
+        fontWeight = labelFontWeight,
+        color = labelColor
+    )
+    val labelTextWidth: Float = with(LocalDensity.current) {
+        rememberTextMeasurer().measure(
+            label,
+            labelStyle
+        ).size.width.toDp().toPx()
+    }
+    Box {
+        BasicText(
+            text = label,
+            style = labelStyle,
+            modifier = Modifier.offset(32.dp, 0.dp)
+
+        )
+    }
+    Box(modifier = Modifier.padding(top = labelTextSizeDp / 2)) {
+        BasicTextField(
+            readOnly = true,
+            cursorBrush = SolidColor(Color.White),
+            value = value,
+            onValueChange = onValueChange,
+            onTextLayout = { },
+            textStyle = TextStyle(
+                fontSize = 14.sp,
+                color = Color.White,
+                fontFamily = quicksandFamily,
+                fontWeight = FontWeight.Medium
+            ),
+            modifier = Modifier
+                .drawBehind {
+                    clipRect(
+                        top = 0f,
+                        left = leftCutPosition - labelCutoutPadding,
+                        bottom = strokeWidth * 2,
+                        right = leftCutPosition + labelCutoutPadding + labelTextWidth,
+                        clipOp = ClipOp.Difference
+                    ) {
+                        drawRoundRect(
+                            color = borderColor,
+                            topLeft = Offset(strokeWidth, strokeWidth),
+                            size = Size(
+                                size.width - strokeWidth * 2,
+                                size.height - strokeWidth * 2
+                            ),
+                            cornerRadius = CornerRadius(borderRadius, borderRadius),
+                            style = Stroke(width = strokeWidth)
+                        )
+                    }
+
+                }
+                .width(265.dp)
+                .padding(vertical = paddingVertical, horizontal = paddingHorizontal)
+                .onFocusChanged { focusState ->
+                    isFocused = focusState.isFocused
+                },
+            singleLine = true
+        )
+    }
+}
+
+enum class DragAnchors {
+    Start,
+    End,
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun StuddyToggleButton(
+    enabled: Boolean = true,
+    checked: Boolean = false,
+    onClick: () -> Unit,
+) {
+    val toggleHandleSize: Dp = 24.dp
+    val toggleTrackRadius: Dp = 6.dp
+    val toggleTrackWidth: Dp = 36.dp
+    val toggleTrackHeight: Dp = 12.dp
+
+    val toggleHandleColor: Color =
+        if (enabled) LocalStuddyColors.current.warning700 else Color.White
+    val toggleTrackColor: Color =
+        if (enabled) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.lightNeutral800
+    val toggleTrackCheckedColor: Color =
+        if (enabled) LocalStuddyColors.current.primary500 else LocalStuddyColors.current.lightNeutral700
+
+    val velocityThreshold: Float = with(LocalDensity.current) { 125.dp.toPx() }
+    val trackEnd: Float =
+        with(LocalDensity.current) { (toggleTrackWidth - toggleHandleSize).toPx() }
+    val trackColorEnd: Int =
+        with(LocalDensity.current) {
+            (toggleTrackWidth - toggleHandleSize + 5.dp).toPx().roundToInt()
+        }
+
+    val scope: CoroutineScope = rememberCoroutineScope()
+    val state: AnchoredDraggableState<DragAnchors> = remember {
+        AnchoredDraggableState(
+            initialValue = if (checked) DragAnchors.End else DragAnchors.Start,
+            positionalThreshold = { distance: Float -> distance * 0.5f },
+            velocityThreshold = { velocityThreshold },
+            animationSpec = tween()
+        ).apply {
+            updateAnchors(
+                DraggableAnchors {
+                    DragAnchors.Start at 0f
+                    DragAnchors.End at trackEnd
+                }
+            )
+        }
+    }
+
+//    val trackColor: Color =
+//        if (state.currentValue == DragAnchors.Start) LocalStuddyColors.current.darkNeutral600 else LocalStuddyColors.current.primary500
+
+    Box(
+        modifier = Modifier
+            .then(
+                if (enabled) {
+                    Modifier.clickable {
+                        scope.launch {
+                            if (state.currentValue == DragAnchors.Start) {
+                                state.animateTo(DragAnchors.End)
+                            } else {
+                                state.animateTo(DragAnchors.Start)
+                            }
+                        }
+
+                    }
+                } else {
+                    Modifier
+                }
+            ),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        // unchecked track
+        Box(
+            modifier = Modifier
+                .width(toggleTrackWidth)
+                .height(toggleTrackHeight)
+                .clip(shape = RoundedCornerShape(toggleTrackRadius))
+                .background(toggleTrackColor)
+        ) {
+            // checked track
+            Box(
+                modifier = Modifier
+                    .then(
+                        if (enabled) {
+                            Modifier
+                                .offset {
+                                    IntOffset(
+                                        x = state
+                                            .requireOffset()
+                                            .roundToInt() - trackColorEnd,
+                                        y = 0,
+                                    )
+                                }
+                                .anchoredDraggable(
+                                    state = state,
+                                    orientation = Orientation.Horizontal
+                                )
+                        } else {
+                            when (checked) {
+                                true -> Modifier
+                                false -> Modifier.offset(x = -toggleTrackWidth, y = 0.dp)
+                            }
+                        }
+                    )
+                    .width(toggleTrackWidth)
+                    .height(toggleTrackHeight)
+                    .background(toggleTrackCheckedColor)
+            )
+        }
+        // toggle handle
+        Box(
+            modifier = Modifier
+                .then(
+                    if (enabled) {
+                        Modifier
+                            .offset {
+                                IntOffset(
+                                    x = state
+                                        .requireOffset()
+                                        .roundToInt(),
+                                    y = 0,
+                                )
+                            }
+                            .anchoredDraggable(
+                                state = state,
+                                orientation = Orientation.Horizontal
+                            )
+                    } else {
+                        Modifier
+                        when (checked) {
+                            true -> Modifier
+                                .offset(x = toggleTrackWidth - toggleHandleSize, y = 0.dp)
+                                .border(
+                                    border = BorderStroke(
+                                        1.dp,
+                                        LocalStuddyColors.current.lightNeutral700
+                                    ),
+                                    shape = CircleShape
+                                )
+
+                            false -> Modifier
+                                .border(
+                                    border = BorderStroke(
+                                        1.dp,
+                                        LocalStuddyColors.current.lightNeutral800
+                                    ),
+                                    shape = CircleShape
+                                )
+                        }
+                    }
+                )
+                .size(toggleHandleSize)
+                .clip(shape = CircleShape)
+                .background(toggleHandleColor)
+        )
     }
 }

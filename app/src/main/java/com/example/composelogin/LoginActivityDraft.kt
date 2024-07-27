@@ -5,18 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.AnchoredDraggableState
-import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
-import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,16 +16,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,14 +30,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -61,15 +45,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composelogin.ui.theme.ComposeLoginTheme
 import com.example.composelogin.ui.theme.fredokaFamily
 import com.example.composelogin.ui.theme.quicksandFamily
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 class LoginActivityDraft : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,6 +82,8 @@ fun MainLoginScreen() {
 
 @Composable
 fun LoginContainer() {
+    var email by remember{ mutableStateOf("") }
+    var password by remember{ mutableStateOf("") }
     var checked by remember { mutableStateOf(false) }
     val text: AnnotatedString = buildAnnotatedString {
         append("new to Studdy? ")
@@ -142,8 +124,8 @@ fun LoginContainer() {
         )
 
         // Input Fields for Sign Up
-        StuddyTextFieldGray("Email Address", "Type here")
-        StuddyTextFieldGray("Password", "Type here", isPassword = true)
+        StuddyTextFieldGray(value = email, onValueChange = {email = it}, label = "Email Address")
+        StuddyTextFieldGray(value = password, onValueChange = {password = it}, label = "Password", isPassword = true)
 
         Row(
             modifier = Modifier.width(265.dp),
@@ -267,164 +249,4 @@ fun LoginContainer() {
             }
         )
     }
-}
-
-enum class DragAnchors {
-    Start,
-    End,
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun StuddyToggleButton(
-    enabled: Boolean = true,
-    checked: Boolean = false,
-    onClick: () -> Unit,
-) {
-    val toggleHandleSize: Dp = 24.dp
-    val toggleTrackRadius: Dp = 6.dp
-    val toggleTrackWidth: Dp = 36.dp
-    val toggleTrackHeight: Dp = 12.dp
-
-    val toggleHandleColor: Color =
-        if (enabled) LocalStuddyColors.current.warning700 else Color.White
-    val toggleTrackColor: Color =
-        if (enabled) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.lightNeutral800
-    val toggleTrackCheckedColor: Color =
-        if (enabled) LocalStuddyColors.current.primary500 else LocalStuddyColors.current.lightNeutral700
-
-    val velocityThreshold: Float = with(LocalDensity.current) { 125.dp.toPx() }
-    val trackEnd: Float =
-        with(LocalDensity.current) { (toggleTrackWidth - toggleHandleSize).toPx() }
-    val trackColorEnd: Int =
-        with(LocalDensity.current) {
-            (toggleTrackWidth - toggleHandleSize + 5.dp).toPx().roundToInt()
-        }
-
-    val scope: CoroutineScope = rememberCoroutineScope()
-    val state: AnchoredDraggableState<DragAnchors> = remember {
-        AnchoredDraggableState(
-            initialValue = if (checked) DragAnchors.End else DragAnchors.Start,
-            positionalThreshold = { distance: Float -> distance * 0.5f },
-            velocityThreshold = { velocityThreshold },
-            animationSpec = tween()
-        ).apply {
-            updateAnchors(
-                DraggableAnchors {
-                    DragAnchors.Start at 0f
-                    DragAnchors.End at trackEnd
-                }
-            )
-        }
-    }
-
-//    val trackColor: Color =
-//        if (state.currentValue == DragAnchors.Start) LocalStuddyColors.current.darkNeutral600 else LocalStuddyColors.current.primary500
-
-    Box(
-        modifier = Modifier
-            .then(
-                if (enabled) {
-                    Modifier.clickable {
-                        scope.launch {
-                            if (state.currentValue == DragAnchors.Start) {
-                                state.animateTo(DragAnchors.End)
-                            } else {
-                                state.animateTo(DragAnchors.Start)
-                            }
-                        }
-
-                    }
-                } else {
-                    Modifier
-                }
-            ),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        // unchecked track
-        Box(
-            modifier = Modifier
-                .width(toggleTrackWidth)
-                .height(toggleTrackHeight)
-                .clip(shape = RoundedCornerShape(toggleTrackRadius))
-                .background(toggleTrackColor)
-        ) {
-            // checked track
-            Box(
-                modifier = Modifier
-                    .then(
-                        if (enabled) {
-                            Modifier
-                                .offset {
-                                    IntOffset(
-                                        x = state
-                                            .requireOffset()
-                                            .roundToInt() - trackColorEnd,
-                                        y = 0,
-                                    )
-                                }
-                                .anchoredDraggable(
-                                    state = state,
-                                    orientation = Orientation.Horizontal
-                                )
-                        } else {
-                            when (checked) {
-                                true -> Modifier
-                                false -> Modifier.offset(x = -toggleTrackWidth, y = 0.dp)
-                            }
-                        }
-                    )
-                    .width(toggleTrackWidth)
-                    .height(toggleTrackHeight)
-                    .background(toggleTrackCheckedColor)
-            )
-        }
-        // toggle handle
-        Box(
-            modifier = Modifier
-                .then(
-                    if (enabled) {
-                        Modifier
-                            .offset {
-                                IntOffset(
-                                    x = state
-                                        .requireOffset()
-                                        .roundToInt(),
-                                    y = 0,
-                                )
-                            }
-                            .anchoredDraggable(
-                                state = state,
-                                orientation = Orientation.Horizontal
-                            )
-                    } else {
-                        Modifier
-                        when (checked) {
-                            true -> Modifier
-                                .offset(x = toggleTrackWidth - toggleHandleSize, y = 0.dp)
-                                .border(
-                                    border = BorderStroke(
-                                        1.dp,
-                                        LocalStuddyColors.current.lightNeutral700
-                                    ),
-                                    shape = CircleShape
-                                )
-
-                            false -> Modifier
-                                .border(
-                                    border = BorderStroke(
-                                        1.dp,
-                                        LocalStuddyColors.current.lightNeutral800
-                                    ),
-                                    shape = CircleShape
-                                )
-                        }
-                    }
-                )
-                .size(toggleHandleSize)
-                .clip(shape = CircleShape)
-                .background(toggleHandleColor)
-        )
-    }
-
 }
