@@ -14,8 +14,7 @@ import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -27,10 +26,14 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,12 +59,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
@@ -157,11 +160,14 @@ fun StuddyButtonWhite(
 
 @Composable
 fun StuddyTextFieldGray(
+    enabled: Boolean = true,
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    placeholder: String = "Type Here",
-    isPassword: Boolean = false
+    placeholder: String = "",
+    isPassword: Boolean = false,
+    isError: Boolean = false,
+    readOnly: Boolean = false,
 ) {
     var passwordVisible by remember { mutableStateOf((false)) }
     var isFocused by remember {
@@ -172,13 +178,12 @@ fun StuddyTextFieldGray(
     val paddingHorizontal: Dp = 20.dp
     val inputFieldAdditionalPaddingPassword: Dp = if (isPassword) 24.dp else 0.dp
     val borderColor: Color =
-        if (!isFocused) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.primary700
+        if (!enabled) LocalStuddyColors.current.lightNeutral800 else if (isError) LocalStuddyColors.current.error700 else if (!isFocused) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.primary700
     val strokeWidth: Float = with(LocalDensity.current) { 1.dp.toPx() }
     val borderRadius: Float = with(LocalDensity.current) { 20.dp.toPx() }
     val leftCutPosition: Float = with(LocalDensity.current) { 32.dp.toPx() }
     val labelCutoutPadding: Float = with(LocalDensity.current) { 6.dp.toPx() }
-    val labelColor: Color =
-        if (!isFocused) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.primary700
+    val labelColor: Color = borderColor
     val labelTextSize: TextUnit = 10.sp
     val labelTextSizeDp: Dp = with(LocalDensity.current) { labelTextSize.toDp() }
     val labelStyle = TextStyle(
@@ -206,7 +211,7 @@ fun StuddyTextFieldGray(
                 val passwordEyeHidden: ImageVector =
                     ImageVector.vectorResource(id = R.drawable.eyecon_visible)
                 val eyeconColor: Color =
-                    if (!isFocused) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.primary800
+                    if (!enabled) LocalStuddyColors.current.lightNeutral800 else if (isError) LocalStuddyColors.current.error700 else if (!isFocused) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.primary800
 
                 Box(
                     modifier = Modifier
@@ -230,6 +235,8 @@ fun StuddyTextFieldGray(
             }
 
             BasicTextField(
+                enabled = enabled,
+                readOnly = readOnly,
                 value = value,
                 onValueChange = onValueChange,
                 onTextLayout = { },
@@ -273,7 +280,7 @@ fun StuddyTextFieldGray(
                             text = placeholder,
                             style = TextStyle(
                                 fontSize = 14.sp,
-                                color = LocalStuddyColors.current.lightNeutral800,
+                                color = if (isError) LocalStuddyColors.current.error700 else LocalStuddyColors.current.lightNeutral800,
                                 fontFamily = quicksandFamily,
                                 fontWeight = FontWeight.Medium
                             )
@@ -283,19 +290,21 @@ fun StuddyTextFieldGray(
                 },
                 singleLine = true,
                 visualTransformation = if (!isPassword || passwordVisible) VisualTransformation.None else StuddyPasswordVisualTransformation(),
-
-                )
+            )
         }
     }
 }
 
 @Composable
 fun StuddyTextFieldWhite(
+    enabled: Boolean = true,
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    placeholder: String = "Type Here",
-    isPassword: Boolean = false
+    placeholder: String = "",
+    isPassword: Boolean = false,
+    isError: Boolean = false,
+    readOnly: Boolean = false
 ) {
     var passwordVisible by remember { mutableStateOf((false)) }
     var isFocused by remember {
@@ -305,13 +314,18 @@ fun StuddyTextFieldWhite(
     val paddingVertical: Dp = 12.dp
     val paddingHorizontal: Dp = 20.dp
     val inputFieldAdditionalPaddingPassword: Dp = if (isPassword) 24.dp else 0.dp
-    val borderColor: Color = Color.White
+
+    val borderColor: Color =
+        if (!enabled) LocalStuddyColors.current.primary500 else if (isError) LocalStuddyColors.current.error700 else Color.White
+    val labelColor: Color = borderColor
+
     val strokeWidth: Float =
         with(LocalDensity.current) { if (!isFocused) 1.dp.toPx() else 2.dp.toPx() }
     val borderRadius: Float = with(LocalDensity.current) { 20.dp.toPx() }
-    val leftCutPosition: Float = with(LocalDensity.current) { 32.dp.toPx() }
+
+    val leftCutPosition: Float =
+        with(LocalDensity.current) { 32.dp.toPx() } //additional padding for the label
     val labelCutoutPadding: Float = with(LocalDensity.current) { 6.dp.toPx() }
-    val labelColor: Color = Color.White
     val labelTextSize: TextUnit = 10.sp
     val labelTextSizeDp: Dp = with(LocalDensity.current) { labelTextSize.toDp() }
     val labelFontWeight: FontWeight = if (!isFocused) FontWeight.Medium else FontWeight.Bold
@@ -339,9 +353,7 @@ fun StuddyTextFieldWhite(
                     ImageVector.vectorResource(id = R.drawable.eyecon_hidden)
                 val passwordEyeHidden: ImageVector =
                     ImageVector.vectorResource(id = R.drawable.eyecon_visible)
-                val eyeconColor: Color =
-                    if (!isFocused) LocalStuddyColors.current.lightNeutral600 else LocalStuddyColors.current.primary800
-
+                val eyeconColor: Color = borderColor
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -364,13 +376,15 @@ fun StuddyTextFieldWhite(
             }
 
             BasicTextField(
+                enabled = enabled,
+                readOnly = readOnly,
                 cursorBrush = SolidColor(Color.White),
                 value = value,
                 onValueChange = onValueChange,
                 onTextLayout = { },
                 textStyle = TextStyle(
                     fontSize = 14.sp,
-                    color = Color.White,
+                    color = if (!enabled) LocalStuddyColors.current.primary500 else Color.White,
                     fontFamily = quicksandFamily,
                     fontWeight = FontWeight.Medium
                 ),
@@ -408,7 +422,7 @@ fun StuddyTextFieldWhite(
                             text = placeholder,
                             style = TextStyle(
                                 fontSize = 14.sp,
-                                color = LocalStuddyColors.current.primary600,
+                                color = if (isError) LocalStuddyColors.current.error700 else LocalStuddyColors.current.primary600,
                                 fontFamily = quicksandFamily,
                                 fontWeight = FontWeight.Medium
                             )
@@ -418,8 +432,7 @@ fun StuddyTextFieldWhite(
                 },
                 singleLine = true,
                 visualTransformation = if (!isPassword || passwordVisible) VisualTransformation.None else StuddyPasswordVisualTransformation(),
-
-                )
+            )
         }
     }
 }
@@ -438,30 +451,31 @@ class StuddyPasswordVisualTransformation(
 }
 
 @Composable
-fun StuddyDropDownTextField(
+private fun StuddyDropDownTextField(
+    isFocused: Boolean,
     value: String,
-    onValueChange: (String) -> Unit,
-    label: String
+    onClick: () -> Unit,
+    label: String,
+    enabled: Boolean,
+    width: Dp = 265.dp,
+    isError: Boolean = false
 ) {
-    var passwordVisible by remember { mutableStateOf((false)) }
-    var isFocused by remember {
-        mutableStateOf(false)
-    }
-
     val paddingVertical: Dp = 12.dp
     val paddingHorizontal: Dp = 20.dp
-    val borderColor: Color = Color.White
+    val borderColor: Color =
+        if (!enabled) LocalStuddyColors.current.primary500 else if (isError) LocalStuddyColors.current.error700 else Color.White
     val strokeWidth: Float =
         with(LocalDensity.current) { if (!isFocused) 1.dp.toPx() else 2.dp.toPx() }
     val borderRadius: Float = with(LocalDensity.current) { 20.dp.toPx() }
     val leftCutPosition: Float = with(LocalDensity.current) { 32.dp.toPx() }
+    val selectionTextWeight = if (isFocused) FontWeight.Bold else FontWeight.Medium
     val labelCutoutPadding: Float = with(LocalDensity.current) { 6.dp.toPx() }
-    val labelColor: Color = Color.White
+    val labelColor: Color = borderColor
     val labelTextSize: TextUnit = 10.sp
     val labelTextSizeDp: Dp = with(LocalDensity.current) { labelTextSize.toDp() }
     val labelFontWeight: FontWeight = if (!isFocused) FontWeight.Medium else FontWeight.Bold
     val labelStyle = TextStyle(
-        fontSize = 10.sp,
+        fontSize = labelTextSize,
         fontFamily = quicksandFamily,
         fontWeight = labelFontWeight,
         color = labelColor
@@ -472,56 +486,120 @@ fun StuddyDropDownTextField(
             labelStyle
         ).size.width.toDp().toPx()
     }
-    Box {
-        BasicText(
-            text = label,
-            style = labelStyle,
-            modifier = Modifier.offset(32.dp, 0.dp)
 
+    BasicText(
+        text = label,
+        style = labelStyle,
+        modifier = Modifier.offset(32.dp, 0.dp)
+    )
+
+    Box(
+        modifier = Modifier
+            .clickable {
+                onClick()
+            }
+            .padding(top = labelTextSizeDp / 2)
+            .width(width)
+            .drawBehind {
+                clipRect(
+                    top = 0f,
+                    left = leftCutPosition - labelCutoutPadding,
+                    bottom = strokeWidth * 2,
+                    right = leftCutPosition + labelCutoutPadding + labelTextWidth,
+                    clipOp = ClipOp.Difference
+                ) {
+                    drawRoundRect(
+                        color = borderColor,
+                        topLeft = Offset(strokeWidth, strokeWidth),
+                        size = Size(
+                            size.width - strokeWidth * 2,
+                            size.height - strokeWidth * 2
+                        ),
+                        cornerRadius = CornerRadius(borderRadius, borderRadius),
+                        style = Stroke(width = strokeWidth)
+                    )
+                }
+            }
+            .padding(vertical = paddingVertical, horizontal = paddingHorizontal)
+
+
+    ) {
+        Text(
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            text = value,
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = quicksandFamily,
+                color = borderColor,
+                fontWeight = selectionTextWeight
+            )
         )
     }
-    Box(modifier = Modifier.padding(top = labelTextSizeDp / 2)) {
-        BasicTextField(
-            readOnly = true,
-            cursorBrush = SolidColor(Color.White),
-            value = value,
-            onValueChange = onValueChange,
-            onTextLayout = { },
-            textStyle = TextStyle(
-                fontSize = 14.sp,
-                color = Color.White,
-                fontFamily = quicksandFamily,
-                fontWeight = FontWeight.Medium
-            ),
-            modifier = Modifier
-                .drawBehind {
-                    clipRect(
-                        top = 0f,
-                        left = leftCutPosition - labelCutoutPadding,
-                        bottom = strokeWidth * 2,
-                        right = leftCutPosition + labelCutoutPadding + labelTextWidth,
-                        clipOp = ClipOp.Difference
-                    ) {
-                        drawRoundRect(
-                            color = borderColor,
-                            topLeft = Offset(strokeWidth, strokeWidth),
-                            size = Size(
-                                size.width - strokeWidth * 2,
-                                size.height - strokeWidth * 2
-                            ),
-                            cornerRadius = CornerRadius(borderRadius, borderRadius),
-                            style = Stroke(width = strokeWidth)
+}
+
+@Composable
+fun StuddyDropDownMenu(
+    list: List<String>,
+    selectedItem: MutableState<String>,
+    selectedIndex: MutableState<Int>,
+    isFocused: MutableState<Boolean>,
+    isExpanded: MutableState<Boolean>,
+    enabled: Boolean = true,
+    label: String,
+    width: Dp = 265.dp,
+    isError: Boolean = false
+) {
+    Box() {
+        StuddyDropDownTextField(
+            value = selectedItem.value,
+            onClick = {
+                isExpanded.value = true
+                isFocused.value = true
+            },
+            label = label,
+            enabled = enabled,
+            isFocused = isFocused.value,
+            width = width,
+            isError = isError
+        )
+        if (enabled) {
+            MaterialTheme(
+                shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(20.dp)),
+                colorScheme = MaterialTheme.colorScheme.copy(surface = Color.White)
+            ) {
+                DropdownMenu(
+                    modifier = Modifier.width(width),
+                    expanded = isExpanded.value,
+                    onDismissRequest = {
+                        isExpanded.value = false
+                        isFocused.value = false
+                    }
+                ) {
+                    list.forEachIndexed { index, item ->
+                        DropdownMenuItem(
+                            text = {
+                                Row {
+                                    Text(
+                                        item,
+                                        fontSize = 14.sp,
+                                        fontFamily = quicksandFamily,
+                                        color = if (selectedIndex.value == index) LocalStuddyColors.current.primary700 else LocalStuddyColors.current.lightNeutral600
+                                    )
+                                }
+                            }, onClick = {
+                                selectedItem.value = list[index]
+                                selectedIndex.value = index
+                                isExpanded.value = false
+                                isFocused.value = false
+                            },
+                            contentPadding = PaddingValues(vertical = 12.dp, horizontal = 20.dp)
                         )
                     }
-
                 }
-                .width(265.dp)
-                .padding(vertical = paddingVertical, horizontal = paddingHorizontal)
-                .onFocusChanged { focusState ->
-                    isFocused = focusState.isFocused
-                },
-            singleLine = true
-        )
+            }
+        }
+
     }
 }
 

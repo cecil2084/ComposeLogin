@@ -11,7 +11,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -26,13 +25,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -45,11 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.LayoutCoordinates
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,7 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composelogin.ui.theme.ComposeLoginTheme
 import com.example.composelogin.ui.theme.fredokaFamily
-import com.example.composelogin.ui.theme.quicksandFamily
 
 class NewAccountProfileSetUp : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,9 +90,146 @@ fun MainProfileDetailsSetUp() {
 @Composable
 fun ProfileDetailsMainInterface() {
     // all the credentials
-    val firstName = remember { mutableStateOf("") }
-    val lastName = remember { mutableStateOf("") }
-    val gender = remember { mutableStateOf("") }
+    val firstName:MutableState<String> = remember { mutableStateOf("") }
+    val lastName:MutableState<String> = remember { mutableStateOf("") }
+    val gender: List<String> = listOf("Male", "Female", "Others")
+    val selectedGender:MutableState<String> = remember { mutableStateOf("Select Gender") }
+    val selectedGenderIndex:MutableState<Int> = remember { mutableIntStateOf(-1) }
+    val isGenderFocused:MutableState<Boolean> = remember { mutableStateOf(false) }
+    val isGenderExpanded:MutableState<Boolean> = remember { mutableStateOf(false) }
+
+    // all the university list
+    val universityList:List<String> = listOf(
+        "Northeast Institute of Technology",
+        "Pacific Crest University",
+        "Highland State College",
+        "Southern Ridge Institute",
+        "Central Valley University",
+        "Lakeside College of the Arts",
+        "Emerald City University",
+        "Redwood Institute of Science",
+        "Coastal Bay University",
+        "Mountainview Polytechnic",
+        "Riverstone University",
+        "Golden Plains Academy",
+        "Horizon University",
+        "Starlight Institute",
+        "Bluegrass College",
+        "Canyon State University",
+        "Aspenwood University",
+        "Everglades Institute",
+        "Granite Hills College",
+        "Meadowbrook University",
+        "Suncrest Institute",
+        "Pinehill University",
+        "Maplewood College",
+        "Bayside University",
+        "Silverlake Institute",
+        "Timberland University",
+        "Coral Reef College",
+        "Windriver Academy",
+        "Cedar Grove University",
+        "Ivy Ridge Institute",
+        "Desert Sands University",
+        "Willowbrook College",
+        "Prairie State University",
+        "Moonlit University",
+        "Clearwater Institute",
+        "Oakwood University",
+        "Seaside College",
+        "Snowcap Institute",
+        "Golden Gate University",
+        "Harborview University",
+        "Wildflower Institute",
+        "Stormpeak University",
+        "Valley View College",
+        "Stonebridge University",
+        "Highlands University",
+        "Crystal Lake College",
+        "Sunflower State Institute",
+        "Palmspring University",
+        "Forest Glen University",
+        "Riverbend Institute"
+    )
+
+    val selectedUniversityItem = remember {
+        mutableStateOf("Select University")
+    }
+    val selectedUniversityIndex = remember {
+        mutableIntStateOf(-1)
+    }
+    val isUniversityDropDownExpanded = remember {
+        mutableStateOf(false)
+    }
+    val isUniversityDropDownFocused = remember {
+        mutableStateOf(false)
+    }
+
+    val degreeProgramList = listOf(
+        "Quantum Computing",
+        "Environmental Robotics",
+        "Cultural Cybernetics",
+        "Biomedical Engineering",
+        "Sustainable Architecture",
+        "Digital Media Arts",
+        "Astrobiology",
+        "Marine Biotechnology",
+        "Nanotechnology Engineering",
+        "Renewable Energy Management",
+        "Artificial Intelligence and Ethics",
+        "Virtual Reality Design",
+        "Forensic Anthropology",
+        "Global Health Policy",
+        "Cybersecurity Law",
+        "Genomic Medicine",
+        "Interactive Media Design",
+        "Environmental Data Science",
+        "Urban Planning and Smart Cities",
+        "Space Sciences",
+        "Advanced Culinary Arts",
+        "Ecological Economics",
+        "Sports Analytics",
+        "Quantum Physics",
+        "Marine Conservation",
+        "Biomolecular Science",
+        "Renewable Energy Engineering",
+        "Film and Digital Storytelling",
+        "Aerospace Engineering",
+        "Global Development Studies",
+        "Bioinformatics",
+        "Cyberpsychology",
+        "Environmental Policy and Management",
+        "Genetic Counseling",
+        "Human-Computer Interaction",
+        "Intelligent Systems Engineering",
+        "Neuroscience",
+        "Pharmaceutical Sciences",
+        "Robotics and Automation",
+        "Sustainable Agriculture",
+        "Urban Ecology",
+        "Virtual Environments",
+        "Wildlife Conservation",
+        "Youth and Family Studies",
+        "Zoology and Wildlife Science",
+        "Ecotourism Management",
+        "Game Design and Development",
+        "Health Informatics",
+        "Interior Architecture",
+        "Mechatronics"
+    )
+
+    val selectedProgramDegree = remember {
+        mutableStateOf("Select Degree Program")
+    }
+    val selectedProgramDegreeIndex = remember {
+        mutableIntStateOf(-1)
+    }
+    val isProgramDegreeDropDownExpanded = remember {
+        mutableStateOf(false)
+    }
+    val isProgramDegreeDropDownFocused = remember {
+        mutableStateOf(false)
+    }
 
     var currentPage by remember { mutableIntStateOf(1) }
     val pageTotal = 3
@@ -117,7 +245,7 @@ fun ProfileDetailsMainInterface() {
                 LocalStuddyColors.current.primary700,
                 shape = RoundedCornerShape(topStart = 58.dp, topEnd = 58.dp)
             )
-            .padding(bottom = 16.dp)
+            .padding(bottom = 24.dp)
             .fillMaxWidth()
             .navigationBarsPadding()
     ) {
@@ -180,8 +308,27 @@ fun ProfileDetailsMainInterface() {
         }
 
         when (currentPage) {
-            1 -> PersonalDetailsStage(firstName, lastName, gender)
-            2 -> UniversityEnrolled()
+            1 -> PersonalDetailsStage(
+                firstName = firstName,
+                lastName = lastName,
+                gender = gender,
+                selectedGender = selectedGender,
+                selectedGenderIndex = selectedGenderIndex,
+                isGenderFocused = isGenderFocused,
+                isGenderExpanded = isGenderExpanded
+            )
+            2 -> UniversityEnrolled(
+                universityList = universityList,
+                selectedUniversityItem = selectedUniversityItem,
+                selectedUniversityIndex = selectedUniversityIndex,
+                isUniversityDropDownExpanded = isUniversityDropDownExpanded,
+                isUniversityDropDownFocused = isUniversityDropDownFocused,
+                degreeProgramList = degreeProgramList,
+                selectedProgramDegree = selectedProgramDegree,
+                selectedProgramDegreeIndex = selectedProgramDegreeIndex,
+                isProgramDegreeDropDownFocused = isProgramDegreeDropDownFocused,
+                isProgramDegreeDropDownExpanded = isProgramDegreeDropDownExpanded
+            )
             3 -> UploadRegistrationForm()
         }
 
@@ -201,7 +348,11 @@ fun ProfileDetailsMainInterface() {
 fun PersonalDetailsStage(
     firstName: MutableState<String>,
     lastName: MutableState<String>,
-    gender: MutableState<String>
+    gender: List<String>,
+    selectedGender: MutableState<String>,
+    selectedGenderIndex: MutableState<Int>,
+    isGenderFocused: MutableState<Boolean>,
+    isGenderExpanded: MutableState<Boolean>
 ) {
     Box(
         modifier = Modifier.padding(bottom = 16.dp),
@@ -238,114 +389,63 @@ fun PersonalDetailsStage(
                 tint = Color.White
             )
         }
-
-//        Box(
-//            modifier = Modifier
-//                .offset(y=10.dp)
-//                .size(43.dp)
-//                .background(LocalStuddyColors.current.primary700)
-//                .clip(shape = CircleShape)
-//                .border(
-//                    BorderStroke(2.dp, Color.White),
-//                    CircleShape
-//                )
-//        ) {
-//
-//        }
     }
 
     StuddyTextFieldWhite(
         value = firstName.value,
         onValueChange = { firstName.value = it },
-        label = "First Name"
+        label = "First Name",
+        placeholder = "John"
     )
     StuddyTextFieldWhite(
         value = lastName.value,
         onValueChange = { lastName.value = it },
-        label = "Last Name"
+        label = "Last Name",
+        placeholder = "Appleseed"
     )
-    StuddyTextFieldWhite(
-        value = gender.value,
-        onValueChange = { gender.value = it },
+    StuddyDropDownMenu(
+        list = gender,
+        selectedItem = selectedGender,
+        selectedIndex = selectedGenderIndex,
+        isFocused = isGenderFocused,
+        isExpanded = isGenderExpanded,
         label = "Gender"
-    ) // DROPDOWN DAPAT TO BE CORRECTED
+    )
     StuddyButtonWhite(enabled = false, content = "Choose Birthday Date", onClick = { /*TODO*/ })
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 //Contains School
-fun UniversityEnrolled() {
+fun UniversityEnrolled(
+    universityList: List<String>,
+    selectedUniversityItem: MutableState<String>,
+    selectedUniversityIndex: MutableState<Int>,
+    isUniversityDropDownExpanded: MutableState<Boolean>,
+    isUniversityDropDownFocused: MutableState<Boolean>,
+    degreeProgramList: List<String>,
+    selectedProgramDegree: MutableState<String>,
+    selectedProgramDegreeIndex: MutableState<Int>,
+    isProgramDegreeDropDownFocused: MutableState<Boolean>,
+    isProgramDegreeDropDownExpanded: MutableState<Boolean>,
+) {
 
-    var anchorCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
-
-    var list = listOf(
-        "University of the East",
-        "University one",
-        "university two",
-        "University three",
-        "university 4",
-        "University of the East",
-        "University one",
-        "university two",
-        "University three",
-        "university 4",
-        "University of the East",
-        "University one",
-        "university two",
-        "University three",
-        "university 4"
+    StuddyDropDownMenu(
+        list = universityList,
+        selectedItem = selectedUniversityItem,
+        selectedIndex = selectedUniversityIndex,
+        isFocused = isUniversityDropDownFocused,
+        isExpanded = isUniversityDropDownExpanded,
+        label = "School"
     )
-    var selectedItem by remember {
-        mutableStateOf("Select University")
-    }
-    var selectedIndex by remember {
-        mutableStateOf(0)
-    }
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
 
-    ExposedDropdownMenuBox(expanded = isExpanded, onExpandedChange = { isExpanded = !isExpanded }) {
-//        MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(20.dp))){
-//            TextField(
-//                modifier = Modifier.menuAnchor(),
-//                value = selectedItem,
-//                onValueChange = {},
-//                readOnly = true,
-//                shape = RoundedCornerShape(20.dp)
-//            )
-//        }
-        StuddyDropDownTextField(value = selectedItem, onValueChange = {}, label = "School")
-        MaterialTheme(
-            shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(20.dp)),
-            colorScheme = MaterialTheme.colorScheme.copy(surface = Color.White)
-        ) {
-            ExposedDropdownMenu(
-                modifier = Modifier,
-                expanded = isExpanded,
-                onDismissRequest = { isExpanded = false }) {
-                list.forEachIndexed { index, item ->
-                    DropdownMenuItem(text = {
-                        Row {
-                            Text(
-                                item,
-                                fontSize = 14.sp,
-                                fontFamily = quicksandFamily,
-                                color = if (selectedIndex == index) LocalStuddyColors.current.primary700 else LocalStuddyColors.current.lightNeutral600
-                            )
-                        }
-                    }, onClick = {
-                        selectedItem = list[index]
-                        selectedIndex = index
-                        isExpanded = false
-                    },
-                        contentPadding = PaddingValues(vertical = 12.dp, horizontal = 20.dp)
-                    )
-                }
-            }
-        }
-    }
+    StuddyDropDownMenu(
+        list = degreeProgramList,
+        selectedItem = selectedProgramDegree,
+        selectedIndex = selectedProgramDegreeIndex,
+        isFocused = isProgramDegreeDropDownFocused,
+        isExpanded = isProgramDegreeDropDownExpanded,
+        label = "Degree Program"
+    )
 }
 
 @Composable

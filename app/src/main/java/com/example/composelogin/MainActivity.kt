@@ -172,8 +172,8 @@ fun SignUpContainer() {
         )
 
         // Input Fields for Sign Up
-        StuddyTextFieldGray(value = username, onValueChange = {username = it}, label = "Username")
-        StuddyTextFieldGray(value = email, onValueChange = {email = it}, label = "Email Address")
+        StuddyTextFieldGray(value = username, onValueChange = {username = it}, label = "Username", placeholder = "johnappleseed_2084")
+        StuddyTextFieldGray(value = email, onValueChange = {email = it}, label = "Email Address", placeholder = "johnappleseed@apple.com")
         StuddyTextFieldGray(value = password, onValueChange = {password = it}, label = "Password", isPassword = true)
 
         Spacer(modifier = Modifier.height(16.dp))
