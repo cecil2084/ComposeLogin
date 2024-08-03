@@ -18,8 +18,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = NavRoutes.SIGNUP) {
                     composable(NavRoutes.SIGNUP)  { MainSignUpScreen(navController) }
-                    composable(NavRoutes.LOGIN) { MainLoginScreen() }
-                    composable(NavRoutes.SETUP_PROFILE) { MainProfileDetailsSetUp() }
+                    composable(NavRoutes.LOGIN) { MainLoginScreen(navController) }
+                    composable(NavRoutes.SETUP_PROFILE) { MainProfileDetailsSetUp(navController) }
                 }
             }
         }
