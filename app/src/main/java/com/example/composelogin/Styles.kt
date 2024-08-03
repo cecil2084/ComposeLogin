@@ -614,6 +614,7 @@ fun StuddyToggleButton(
     enabled: Boolean = true,
     checked: Boolean = false,
     onClick: () -> Unit,
+//    toggleOption: MutableState<Boolean>
 ) {
     val toggleHandleSize: Dp = 24.dp
     val toggleTrackRadius: Dp = 6.dp
@@ -667,7 +668,6 @@ fun StuddyToggleButton(
                                 state.animateTo(DragAnchors.Start)
                             }
                         }
-
                     }
                 } else {
                     Modifier

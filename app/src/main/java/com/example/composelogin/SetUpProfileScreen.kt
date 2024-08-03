@@ -1,10 +1,5 @@
 package com.example.composelogin
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,11 +21,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -40,38 +34,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.composelogin.ui.theme.ComposeLoginTheme
+import androidx.navigation.NavHostController
 import com.example.composelogin.ui.theme.fredokaFamily
 
-class NewAccountProfileSetUp : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ComposeLoginTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "Android",
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                }
-                MainProfileDetailsSetUp()
-            }
-        }
-    }
-}
-
 @Composable
-fun MainProfileDetailsSetUp() {
+fun MainProfileDetailsSetUp(navHostController: NavHostController) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -83,23 +60,23 @@ fun MainProfileDetailsSetUp() {
 //            TODO("Text slideshow here")
         }
 
-        ProfileDetailsMainInterface()
+        ProfileDetailsMainInterface(navHostController)
     }
 }
 
 @Composable
-fun ProfileDetailsMainInterface() {
+fun ProfileDetailsMainInterface(navHostController: NavHostController) {
     // all the credentials
-    val firstName:MutableState<String> = remember { mutableStateOf("") }
-    val lastName:MutableState<String> = remember { mutableStateOf("") }
+    val firstName: MutableState<String> = remember { mutableStateOf("") }
+    val lastName: MutableState<String> = remember { mutableStateOf("") }
     val gender: List<String> = listOf("Male", "Female", "Others")
-    val selectedGender:MutableState<String> = remember { mutableStateOf("Select Gender") }
-    val selectedGenderIndex:MutableState<Int> = remember { mutableIntStateOf(-1) }
-    val isGenderFocused:MutableState<Boolean> = remember { mutableStateOf(false) }
-    val isGenderExpanded:MutableState<Boolean> = remember { mutableStateOf(false) }
+    val selectedGender: MutableState<String> = remember { mutableStateOf("Select Gender") }
+    val selectedGenderIndex: MutableState<Int> = remember { mutableIntStateOf(-1) }
+    val isGenderFocused: MutableState<Boolean> = remember { mutableStateOf(false) }
+    val isGenderExpanded: MutableState<Boolean> = remember { mutableStateOf(false) }
 
     // all the university list
-    val universityList:List<String> = listOf(
+    val universityList: List<String> = listOf(
         "Northeast Institute of Technology",
         "Pacific Crest University",
         "Highland State College",
@@ -235,7 +212,6 @@ fun ProfileDetailsMainInterface() {
     val pageTotal = 3
     val pagePadding: Dp = 8.dp
     val actualContentTopPadding: Dp = 24.dp - pagePadding
-    val context = LocalContext.current
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -278,8 +254,8 @@ fun ProfileDetailsMainInterface() {
                 if (currentPage > 1) {
                     currentPage--
                 } else {
-                    context.startActivity(Intent(context, MainActivity::class.java))
-
+                    navHostController.navigate(NavRoutes.SIGNUP)
+                    //GOTO SIGN UP SCREEN
                 }
             }) {
                 Icon(
@@ -317,6 +293,7 @@ fun ProfileDetailsMainInterface() {
                 isGenderFocused = isGenderFocused,
                 isGenderExpanded = isGenderExpanded
             )
+
             2 -> UniversityEnrolled(
                 universityList = universityList,
                 selectedUniversityItem = selectedUniversityItem,
@@ -329,6 +306,7 @@ fun ProfileDetailsMainInterface() {
                 isProgramDegreeDropDownFocused = isProgramDegreeDropDownFocused,
                 isProgramDegreeDropDownExpanded = isProgramDegreeDropDownExpanded
             )
+
             3 -> UploadRegistrationForm()
         }
 
@@ -337,7 +315,7 @@ fun ProfileDetailsMainInterface() {
             if (currentPage < pageTotal) {
                 currentPage++
             } else {
-                context.startActivity(Intent(context, MainActivity::class.java))
+                //GOTO SIGN UP SCREEN
             }
         })
     }

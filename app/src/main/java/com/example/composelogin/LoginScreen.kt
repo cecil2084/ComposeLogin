@@ -1,10 +1,5 @@
 package com.example.composelogin
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -47,24 +41,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.composelogin.ui.theme.ComposeLoginTheme
+import androidx.navigation.NavHostController
 import com.example.composelogin.ui.theme.fredokaFamily
 import com.example.composelogin.ui.theme.quicksandFamily
 
-class LoginActivityDraft : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ComposeLoginTheme {
-                MainLoginScreen()
-            }
-        }
-    }
-}
-
 @Composable
-fun MainLoginScreen() {
+fun MainLoginScreen(navHostController: NavHostController) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -76,15 +58,15 @@ fun MainLoginScreen() {
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) { StuddyLogoStartUpScreen() }
-        LoginContainer()
+        LoginContainer(navHostController)
     }
 }
 
 @Composable
-fun LoginContainer() {
+fun LoginContainer(navHostController: NavHostController) {
     var email by remember{ mutableStateOf("") }
     var password by remember{ mutableStateOf("") }
-    var checked by remember { mutableStateOf(false) }
+    var rememberMe by remember { mutableStateOf(false) }
     val text: AnnotatedString = buildAnnotatedString {
         append("new to Studdy? ")
         pushStringAnnotation(tag = "click", annotation = "click")
@@ -97,7 +79,6 @@ fun LoginContainer() {
         }
         pop()
     }
-    val context = LocalContext.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -135,7 +116,7 @@ fun LoginContainer() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StuddyToggleButton(enabled = true, checked = checked, onClick = {})
+                StuddyToggleButton(enabled = true, checked = rememberMe, onClick = {rememberMe = !rememberMe})
                 Text(
                     text = "Remember Me",
                     fontSize = 12.sp,
@@ -244,7 +225,8 @@ fun LoginContainer() {
                 text.getStringAnnotations(tag = "click", start = offset, end = offset)
                     .firstOrNull()
                     ?.let {
-                        context.startActivity(Intent(context, MainActivity::class.java))
+                        navHostController.navigate(NavRoutes.SIGNUP)
+                        //GOTO SIGN UP SCREEN
                     }
             }
         )
