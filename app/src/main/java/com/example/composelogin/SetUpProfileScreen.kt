@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,8 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -44,11 +41,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.composelogin.ui.theme.fredokaFamily
 
 @Composable
-fun MainProfileDetailsSetUp(navHostController: NavHostController) {
+fun MainProfileDetailsSetUp(
+    onSignUpClick: () -> Unit,
+    onConfirmClick: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -60,12 +59,15 @@ fun MainProfileDetailsSetUp(navHostController: NavHostController) {
 //            TODO("Text slideshow here")
         }
 
-        ProfileDetailsMainInterface(navHostController)
+        ProfileDetailsMainInterface(onSignUpClick, onConfirmClick)
     }
 }
 
 @Composable
-fun ProfileDetailsMainInterface(navHostController: NavHostController) {
+fun ProfileDetailsMainInterface(
+    onSignUpClick: () -> Unit,
+    onConfirmClick: () -> Unit
+) {
     // all the credentials
     val firstName: MutableState<String> = remember { mutableStateOf("") }
     val lastName: MutableState<String> = remember { mutableStateOf("") }
@@ -254,7 +256,7 @@ fun ProfileDetailsMainInterface(navHostController: NavHostController) {
                 if (currentPage > 1) {
                     currentPage--
                 } else {
-                    navHostController.navigate(NavRoutes.SIGNUP)
+                    onSignUpClick()
                     //GOTO SIGN UP SCREEN
                 }
             }) {
@@ -315,6 +317,7 @@ fun ProfileDetailsMainInterface(navHostController: NavHostController) {
             if (currentPage < pageTotal) {
                 currentPage++
             } else {
+                onConfirmClick()
                 //GOTO SIGN UP SCREEN
             }
         })

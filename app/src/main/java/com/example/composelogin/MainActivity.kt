@@ -17,9 +17,17 @@ class MainActivity : ComponentActivity() {
             ComposeLoginTheme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = NavRoutes.SIGNUP) {
-                    composable(NavRoutes.SIGNUP)  { MainSignUpScreen(navController) }
-                    composable(NavRoutes.LOGIN) { MainLoginScreen(navController) }
-                    composable(NavRoutes.SETUP_PROFILE) { MainProfileDetailsSetUp(navController) }
+                    composable(NavRoutes.SIGNUP)  { MainSignUpScreen(
+                        onSignUpClick = {navController.navigate(NavRoutes.SETUP_PROFILE)},
+                        onLoginClick = {navController.navigate(NavRoutes.LOGIN)}
+                    ) }
+                    composable(NavRoutes.LOGIN) { MainLoginScreen(
+                        onSignUpClick = {navController.navigate(NavRoutes.SIGNUP)}
+                    ) }
+                    composable(NavRoutes.SETUP_PROFILE) { MainProfileDetailsSetUp(
+                        onConfirmClick = {navController.navigate(NavRoutes.LOGIN)},
+                        onSignUpClick = {navController.navigate(NavRoutes.SIGNUP)}
+                    ) }
                 }
             }
         }

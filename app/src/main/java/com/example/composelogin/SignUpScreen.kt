@@ -41,12 +41,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.composelogin.ui.theme.fredokaFamily
 import com.example.composelogin.ui.theme.quicksandFamily
 
 @Composable
-fun MainSignUpScreen(navHostController: NavHostController) {
+fun MainSignUpScreen(
+    onSignUpClick: () -> Unit,
+    onLoginClick: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -58,15 +60,21 @@ fun MainSignUpScreen(navHostController: NavHostController) {
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) { StuddyLogoStartUpScreen() }
-        SignUpContainer(navHostController)
+        SignUpContainer(
+            onSignUpClick,
+            onLoginClick
+        )
     }
 }
 
 @Composable
-fun SignUpContainer(navHostController: NavHostController) {
-    var username by remember{ mutableStateOf("") }
-    var email by remember{ mutableStateOf("") }
-    var password by remember{ mutableStateOf("") }
+fun SignUpContainer(
+    onSignUpClick: () -> Unit,
+    onLoginClick: () -> Unit
+) {
+    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     val text: AnnotatedString = buildAnnotatedString {
         append("already have an account? ")
         pushStringAnnotation(tag = "click", annotation = "click")
@@ -144,18 +152,30 @@ fun SignUpContainer(navHostController: NavHostController) {
         )
 
         // Input Fields for Sign Up
-        StuddyTextFieldGray(value = username, onValueChange = {username = it}, label = "Username", placeholder = "johnappleseed_2084")
-        StuddyTextFieldGray(value = email, onValueChange = {email = it}, label = "Email Address", placeholder = "johnappleseed@apple.com")
-        StuddyTextFieldGray(value = password, onValueChange = {password = it}, label = "Password", isPassword = true)
+        StuddyTextFieldGray(
+            value = username,
+            onValueChange = { username = it },
+            label = "Username",
+            placeholder = "johnappleseed_2084"
+        )
+        StuddyTextFieldGray(
+            value = email,
+            onValueChange = { email = it },
+            label = "Email Address",
+            placeholder = "johnappleseed@apple.com"
+        )
+        StuddyTextFieldGray(
+            value = password,
+            onValueChange = { password = it },
+            label = "Password",
+            isPassword = true
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         StuddyButtonBlue(
             content = "Sign Up",
-            onClick = {
-                navHostController.navigate(NavRoutes.SETUP_PROFILE)
-                //GOTO SET UP PROFILE SCREEN
-            }
+            onClick = onSignUpClick
         )
 
         Text(
@@ -240,8 +260,7 @@ fun SignUpContainer(navHostController: NavHostController) {
                 text.getStringAnnotations(tag = "click", start = offset, end = offset)
                     .firstOrNull()
                     ?.let {
-                        navHostController.navigate(NavRoutes.LOGIN)
-                        //GOTO LOGIN SCREEN
+                        onLoginClick()
                     }
             }
         )

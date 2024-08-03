@@ -41,12 +41,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.composelogin.ui.theme.fredokaFamily
 import com.example.composelogin.ui.theme.quicksandFamily
 
 @Composable
-fun MainLoginScreen(navHostController: NavHostController) {
+fun MainLoginScreen(
+    onSignUpClick: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -58,14 +59,16 @@ fun MainLoginScreen(navHostController: NavHostController) {
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) { StuddyLogoStartUpScreen() }
-        LoginContainer(navHostController)
+        LoginContainer(onSignUpClick)
     }
 }
 
 @Composable
-fun LoginContainer(navHostController: NavHostController) {
-    var email by remember{ mutableStateOf("") }
-    var password by remember{ mutableStateOf("") }
+fun LoginContainer(
+    onSignUpClick: () -> Unit
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
     val text: AnnotatedString = buildAnnotatedString {
         append("new to Studdy? ")
@@ -105,8 +108,18 @@ fun LoginContainer(navHostController: NavHostController) {
         )
 
         // Input Fields for Sign Up
-        StuddyTextFieldGray(value = email, onValueChange = {email = it}, label = "Email Address", placeholder = "johnappleseed@apple.com")
-        StuddyTextFieldGray(value = password, onValueChange = {password = it}, label = "Password", isPassword = true)
+        StuddyTextFieldGray(
+            value = email,
+            onValueChange = { email = it },
+            label = "Email Address",
+            placeholder = "johnappleseed@apple.com"
+        )
+        StuddyTextFieldGray(
+            value = password,
+            onValueChange = { password = it },
+            label = "Password",
+            isPassword = true
+        )
 
         Row(
             modifier = Modifier.width(265.dp),
@@ -116,7 +129,10 @@ fun LoginContainer(navHostController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StuddyToggleButton(enabled = true, checked = rememberMe, onClick = {rememberMe = !rememberMe})
+                StuddyToggleButton(
+                    enabled = true,
+                    checked = rememberMe,
+                    onClick = { rememberMe = !rememberMe })
                 Text(
                     text = "Remember Me",
                     fontSize = 12.sp,
@@ -225,7 +241,7 @@ fun LoginContainer(navHostController: NavHostController) {
                 text.getStringAnnotations(tag = "click", start = offset, end = offset)
                     .firstOrNull()
                     ?.let {
-                        navHostController.navigate(NavRoutes.SIGNUP)
+                        onSignUpClick()
                         //GOTO SIGN UP SCREEN
                     }
             }
