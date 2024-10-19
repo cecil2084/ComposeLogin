@@ -1,4 +1,4 @@
-package com.example.composelogin
+package com.example.composelogin.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,12 +41,18 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.composelogin.R
+import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonBlue
+import com.example.composelogin.ui.screens.styles.StuddyLogoStartUpScreen
+import com.example.composelogin.ui.screens.styles.textfields.StuddyTextFieldGray
+import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.theme.fredokaFamily
 import com.example.composelogin.ui.theme.quicksandFamily
 
 @Composable
-fun MainLoginScreen(
-    onSignUpClick: () -> Unit
+fun MainSignUpScreen(
+    onSignUpClick: () -> Unit,
+    onLoginClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -59,26 +65,30 @@ fun MainLoginScreen(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) { StuddyLogoStartUpScreen() }
-        LoginContainer(onSignUpClick)
+        SignUpContainer(
+            onSignUpClick,
+            onLoginClick
+        )
     }
 }
 
 @Composable
-fun LoginContainer(
-    onSignUpClick: () -> Unit
+fun SignUpContainer(
+    onSignUpClick: () -> Unit,
+    onLoginClick: () -> Unit
 ) {
+    var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(false) }
     val text: AnnotatedString = buildAnnotatedString {
-        append("new to Studdy? ")
+        append("already have an account? ")
         pushStringAnnotation(tag = "click", annotation = "click")
         withStyle(
             SpanStyle(
                 textDecoration = TextDecoration.Underline,
             )
         ) {
-            append("Sign Up")
+            append("Login")
         }
         pop()
     }
@@ -93,7 +103,6 @@ fun LoginContainer(
             )
             .padding(vertical = 72.dp)
             .fillMaxWidth()
-//            .verticalScroll(rememberScrollState())
             .navigationBarsPadding()
 
     ) {
@@ -101,13 +110,59 @@ fun LoginContainer(
         Text(
             fontFamily = fredokaFamily,
             fontWeight = FontWeight.Medium,
-            text = "Log In",
+            text = "Sign Up",
             fontSize = 32.sp,
             color = LocalStuddyColors.current.lightNeutral600,
             textAlign = TextAlign.Center
         )
 
+        // Copyright statement
+        Text(
+            text = buildAnnotatedString {
+                append("By signing up, you agree to our ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("terms")
+                }
+                append(". Learn how we process in our ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("Privacy Policy")
+                }
+                append(" and ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Medium,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("Cookies Policy")
+                }
+                append(".")
+            },
+
+            fontFamily = quicksandFamily,
+            fontSize = 10.sp,
+            color = LocalStuddyColors.current.lightNeutral600,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.width(266.dp)
+        )
+
         // Input Fields for Sign Up
+        StuddyTextFieldGray(
+            value = username,
+            onValueChange = { username = it },
+            label = "Username",
+            placeholder = "johnappleseed_2084"
+        )
         StuddyTextFieldGray(
             value = email,
             onValueChange = { email = it },
@@ -121,46 +176,15 @@ fun LoginContainer(
             isPassword = true
         )
 
-        Row(
-            modifier = Modifier.width(265.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                StuddyToggleButton(
-                    enabled = true,
-                    checked = rememberMe,
-                    onClick = { rememberMe = !rememberMe })
-                Text(
-                    text = "Remember Me",
-                    fontSize = 12.sp,
-                    fontFamily = quicksandFamily,
-                    fontWeight = FontWeight.Medium,
-                    color = LocalStuddyColors.current.lightNeutral600
-                )
-            }
-            Text(
-                text = "Forgot Password?",
-                fontSize = 12.sp,
-                fontFamily = quicksandFamily,
-                fontWeight = FontWeight.Medium,
-                color = LocalStuddyColors.current.primary700
-            )
-        }
-
         Spacer(modifier = Modifier.height(16.dp))
 
         StuddyButtonBlue(
-            content = "Log in",
-            onClick = { }
+            content = "Sign Up",
+            onClick = onSignUpClick
         )
 
-//            Spacer(modifier = Modifier.height(8.dp))
-
         Text(
-            text = "or login using",
+            text = "or sign up using",
             fontSize = 12.sp,
             fontFamily = quicksandFamily,
             fontWeight = FontWeight.Medium,
@@ -228,7 +252,7 @@ fun LoginContainer(
             }
         }
 
-        // dont have an account account clickable
+        // already have an account clickable
         ClickableText(
             style = TextStyle(
                 fontFamily = quicksandFamily,
@@ -241,8 +265,7 @@ fun LoginContainer(
                 text.getStringAnnotations(tag = "click", start = offset, end = offset)
                     .firstOrNull()
                     ?.let {
-                        onSignUpClick()
-                        //GOTO SIGN UP SCREEN
+                        onLoginClick()
                     }
             }
         )

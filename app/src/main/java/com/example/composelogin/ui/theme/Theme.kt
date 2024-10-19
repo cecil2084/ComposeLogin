@@ -1,6 +1,5 @@
 package com.example.composelogin.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -11,9 +10,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
-import com.example.composelogin.LocalStuddyColors
-import com.example.composelogin.StuddyDarkPalette
-import com.example.composelogin.StuddyLightPalette
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

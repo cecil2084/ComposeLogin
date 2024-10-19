@@ -7,6 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.composelogin.ui.screens.MainLoginScreen
+import com.example.composelogin.ui.screens.MainProfileDetailsSetUp
+import com.example.composelogin.ui.screens.MainSignUpScreen
 import com.example.composelogin.ui.theme.ComposeLoginTheme
 
 class MainActivity : ComponentActivity() {

@@ -1,4 +1,4 @@
-package com.example.composelogin
+package com.example.composelogin.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -41,6 +41,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.composelogin.R
+import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
+import com.example.composelogin.ui.screens.styles.StuddyDropDownMenu
+import com.example.composelogin.ui.screens.styles.textfields.StuddyTextFieldWhite
+import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.theme.fredokaFamily
 
 @Composable

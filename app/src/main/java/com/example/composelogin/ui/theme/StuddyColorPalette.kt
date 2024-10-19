@@ -1,4 +1,4 @@
-package com.example.composelogin
+package com.example.composelogin.ui.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
