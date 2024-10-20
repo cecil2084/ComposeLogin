@@ -35,6 +35,91 @@ val Typography = Typography(
     */
 )
 
+object StuddyTypography {
+    val h4: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 28.sp,
+    )
+
+    val h5: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp,
+    )
+
+    val pXL: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 32.sp,
+        lineHeight = 48.sp,
+    )
+
+    val pLG: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 28.sp,
+        lineHeight = 36.sp,
+    )
+
+    val pMD: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
+        lineHeight = 25.sp,
+    )
+
+    val pSM: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+    )
+
+    val pXS: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 24.sp,
+    )
+
+    val pXXS: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 10.sp,
+        lineHeight = 20.sp,
+    )
+
+    val pXXSBold: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 10.sp,
+        lineHeight = 20.sp,
+    )
+
+    val pXSSmaller: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 24.sp,
+    )
+
+    val pXSSmallerBold: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
+        lineHeight = 24.sp,
+    )
+
+    val pXSBold: TextStyle = TextStyle(
+        fontFamily = quicksandFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 14.sp,
+        lineHeight = 24.sp,
+    )
+}
+
 val quicksandFamily = FontFamily(
     Font(R.font.quicksand_bold, FontWeight.Bold),
     Font(R.font.quicksand_light, FontWeight.Light),

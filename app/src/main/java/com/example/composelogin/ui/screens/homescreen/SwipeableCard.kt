@@ -1,39 +1,56 @@
 package com.example.composelogin.ui.screens.homescreen
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.composelogin.R
+import com.example.composelogin.model.UserProfileSwipeDetails
+import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
+import com.example.composelogin.ui.theme.StuddyTypography
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
@@ -45,7 +62,7 @@ fun SwipeCard(
     sensitivityFactor: Float = 3f,
     content: @Composable () -> Unit
 ) {
-    var offset by remember { mutableStateOf(0f) }
+    var offset by remember { mutableFloatStateOf(0f) }
     var dismissRight by remember { mutableStateOf(false) }
     var dismissLeft by remember { mutableStateOf(false) }
     val density = LocalDensity.current.density
@@ -90,58 +107,152 @@ fun SwipeCard(
             alpha = 10f - animateFloatAsState(if (dismissRight) 1f else 0f, label = "").value,
             rotationZ = animateFloatAsState(offset / 50, label = "").value
         )) {
+
         content()
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun UserProfileCard() {
+fun UserProfileCard(modifier: Modifier = Modifier, userProfileCard: UserProfileSwipeDetails) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier = modifier
     ) {
-        // Scrollable content inside a Card
-        Card(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center) // Center the scrollable card in the parent
-                .height(250.dp), // Set height for the scrollable card
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFF1F1F1)
-            )
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .background(Color.White)
+
         ) {
-            Column(
+            Image(
+                painter = painterResource(id = userProfileCard.profilePicture),
+                contentDescription = "racy user profile picture",
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState()) // Make this part scrollable
-                    .padding(top = 50.dp) // Leave space for the fixed header
+                    .fillMaxWidth()
+                    .aspectRatio(StuddyDimensions.cardAspectRatio)
+                    .clip(
+                        RoundedCornerShape(
+                            bottomStart = StuddyDimensions.cardRoundedRadius,
+                            bottomEnd = StuddyDimensions.cardRoundedRadius
+                        )
+                    ),
+                contentScale = ContentScale.Crop
+            )
+
+            Column(
+                modifier = Modifier.padding(StuddyDimensions.cardPadding)
             ) {
-                // List of items that will be scrollable
-                for (i in 1..10) {
-                    Text(
-                        text = "Scrollable Item $i",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    )
-                    HorizontalDivider()
+                Text(
+                    text = userProfileCard.name,
+                    color = Color.Black,
+                    style = StuddyTypography.h4
+                )
+
+                Text(
+                    text = userProfileCard.degreeProgram,
+                    color = Color.Black,
+                    style = StuddyTypography.pXS
+                )
+
+                Text(
+                    text = userProfileCard.school,
+                    color = Color.Black,
+                    style = StuddyTypography.pXS
+                )
+
+                Spacer(modifier = Modifier.height(StuddyDimensions.cardSectionSpacing))
+
+                Text(
+                    text = stringResource(id = R.string.about),
+                    color = Color.Black,
+                    style = StuddyTypography.pXSBold
+                )
+
+                Text(
+                    text = userProfileCard.about,
+                    color = Color.Black,
+                    style = StuddyTypography.pXS
+                )
+
+                Spacer(modifier = Modifier.height(StuddyDimensions.cardSectionSpacing))
+
+                Text(
+                    text = stringResource(id = R.string.academic_skills),
+                    color = Color.Black,
+                    style = StuddyTypography.h4
+                )
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),
+                    verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
+                ) {
+                    userProfileCard.academicSkills.forEach {
+                        ItemSkillPill(it)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(StuddyDimensions.cardSectionSpacing))
+
+                Text(
+                    text = stringResource(id = R.string.other_skills),
+                    color = Color.Black,
+                    style = StuddyTypography.h4
+                )
+
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),
+                    verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
+                ) {
+                    userProfileCard.otherSkills.forEach {
+                        ItemSkillPill(it)
+                    }
                 }
             }
+
+            Spacer(modifier = Modifier.height(100.dp))
         }
 
-        // Fixed header positioned on top of the scrollable content
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.TopCenter) // Align this box at the top center
-                .background(Color(0xFF6200EE))
-                .padding(16.dp)
+                .background(Color(0XFF1B638B).copy(alpha = 0.8f))
+                .align(Alignment.BottomCenter)
+                .padding(StuddyDimensions.cardPadding),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(
-                text = "Fixed Header",
-                color = Color.White
-            )
+            Column {
+                Text(
+                    text = userProfileCard.name,
+                    style = StuddyTypography.h5,
+                    color = Color.White,
+                )
+
+                Text(
+                    text = userProfileCard.age,
+                    color = Color.White,
+                    style = StuddyTypography.pSM
+                )
+            }
+            Row {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.accept_user_btn),
+                        contentDescription = "Accept Profile",
+                        modifier = Modifier.size(StuddyDimensions.iconMedium),
+                        tint = Color.Unspecified
+                    )
+                }
+
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.reject_user_btn),
+                        contentDescription = "Reject Profile",
+                        modifier = Modifier.size(StuddyDimensions.iconMedium),
+                        tint = Color.Unspecified
+                    )
+                }
+            }
         }
     }
 }
