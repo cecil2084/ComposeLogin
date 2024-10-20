@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.composelogin.ui.screens.homescreen.HomeScreenApp
 import com.example.composelogin.ui.screens.MainLoginScreen
 import com.example.composelogin.ui.screens.MainProfileDetailsSetUp
 import com.example.composelogin.ui.screens.MainSignUpScreen
@@ -20,17 +21,26 @@ class MainActivity : ComponentActivity() {
             ComposeLoginTheme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = NavRoutes.SIGNUP) {
-                    composable(NavRoutes.SIGNUP)  { MainSignUpScreen(
-                        onSignUpClick = {navController.navigate(NavRoutes.SETUP_PROFILE)},
-                        onLoginClick = {navController.navigate(NavRoutes.LOGIN)}
-                    ) }
-                    composable(NavRoutes.LOGIN) { MainLoginScreen(
-                        onSignUpClick = {navController.navigate(NavRoutes.SIGNUP)}
-                    ) }
-                    composable(NavRoutes.SETUP_PROFILE) { MainProfileDetailsSetUp(
-                        onConfirmClick = {navController.navigate(NavRoutes.LOGIN)},
-                        onSignUpClick = {navController.navigate(NavRoutes.SIGNUP)}
-                    ) }
+                    composable(NavRoutes.SIGNUP) {
+                        MainSignUpScreen(
+                            onSignUpClick = { navController.navigate(NavRoutes.SETUP_PROFILE) },
+                            onLoginClick = { navController.navigate(NavRoutes.LOGIN) }
+                        )
+                    }
+                    composable(NavRoutes.LOGIN) {
+                        MainLoginScreen(
+                            onSignUpClick = { navController.navigate(NavRoutes.SIGNUP) }
+                        )
+                    }
+                    composable(NavRoutes.SETUP_PROFILE) {
+                        MainProfileDetailsSetUp(
+                            onConfirmClick = { navController.navigate(NavRoutes.HOME) },
+                            onSignUpClick = { navController.navigate(NavRoutes.SIGNUP) }
+                        )
+                    }
+                    composable(NavRoutes.HOME) {
+                        HomeScreenApp()
+                    }
                 }
             }
         }

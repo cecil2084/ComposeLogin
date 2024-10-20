@@ -1,6 +1,11 @@
 package com.example.composelogin.ui.screens
 
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,8 +23,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -34,19 +41,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.composelogin.R
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
 import com.example.composelogin.ui.screens.styles.StuddyDropDownMenu
 import com.example.composelogin.ui.screens.styles.textfields.StuddyTextFieldWhite
 import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.theme.fredokaFamily
+import java.io.InputStream
 
 @Composable
 fun MainProfileDetailsSetUp(
@@ -340,23 +355,88 @@ fun PersonalDetailsStage(
     isGenderFocused: MutableState<Boolean>,
     isGenderExpanded: MutableState<Boolean>
 ) {
+
+    var selectImages by remember { mutableStateOf<Uri?>(null) }
+    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+
+    val context = LocalContext.current
+
+    val galleryLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+            selectImages = uri
+            uri?.let {
+                var inputStream: InputStream? = null
+                try {
+                    inputStream = context.contentResolver.openInputStream(it)
+                    inputStream?.let { _ ->
+                        imageBitmap =
+                            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                                .asImageBitmap()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    inputStream?.close()
+                }
+            }
+        }
+
+
     Box(
         modifier = Modifier.padding(bottom = 16.dp),
         contentAlignment = Alignment.BottomEnd
     ) {
+
         //Dummy Picture Placeholder
-        Box(
-            modifier = Modifier
-                .size(125.dp)
-                .clip(shape = CircleShape)
-                .border(
-                    BorderStroke(1.dp, Color.White),
-                    CircleShape
-                )
-        )
+
+        if (selectImages != null) {
+//            imageBitmap?.let {
+//                Image(
+//                    bitmap = it,
+//                    contentDescription = null,
+//                    modifier = Modifier
+//                        .size(125.dp)
+//                        .clip(shape = CircleShape)
+//                        .border(
+//                            BorderStroke(1.dp, Color.White),
+//                            CircleShape
+//                        ),
+//                    contentScale = ContentScale.Crop
+//                )
+//            }
+
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(selectImages)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "image profile",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(125.dp)
+                    .clip(shape = CircleShape)
+                    .border(
+                        BorderStroke(1.dp, Color.White),
+                        CircleShape
+                    )
+            )
+
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(125.dp)
+                    .clip(shape = CircleShape)
+                    .border(
+                        BorderStroke(1.dp, Color.White),
+                        CircleShape
+                    )
+            )
+        }
 
         IconButton(
-            onClick = {},
+            onClick = { galleryLauncher.launch("image/*") },
             modifier = Modifier
                 .offset(y = 10.dp)
                 .size(43.dp)
@@ -437,5 +517,19 @@ fun UniversityEnrolled(
 @Composable
 //Contains Registration form upload
 fun UploadRegistrationForm() {
+    var selectImages by remember { mutableStateOf(listOf<Uri>()) }
 
+    val galleryLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) {
+            selectImages = it
+        }
+
+    Button(
+        onClick = { galleryLauncher.launch("image/*") },
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(10.dp)
+    ) {
+        Text(text = "Pick Image From Gallery")
+    }
 }

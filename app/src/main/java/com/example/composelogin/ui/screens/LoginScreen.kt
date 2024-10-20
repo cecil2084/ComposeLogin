@@ -234,7 +234,7 @@ fun LoginContainer(
             }
         }
 
-        // dont have an account account clickable
+        // dont have an account clickable
         ClickableText(
             style = TextStyle(
                 fontFamily = quicksandFamily,

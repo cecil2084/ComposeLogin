@@ -4,4 +4,5 @@ object NavRoutes {
     const val SIGNUP: String = "signup_screen"
     const val LOGIN: String = "login_screen"
     const val SETUP_PROFILE: String = "setup_profile"
+    const val HOME: String = "home_screen"
 }
