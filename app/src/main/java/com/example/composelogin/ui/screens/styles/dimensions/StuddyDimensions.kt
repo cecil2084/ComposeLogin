@@ -4,9 +4,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object StuddyDimensions {
-    val iconSmall: Dp = 30.dp
+    val iconSmall: Dp = 20.dp
     val iconMedium: Dp = 48.dp
-    val iconPadding: Dp = 24.dp
+    val iconPadding: Dp = 20.dp
     val bottomRoundedRadius: Dp = 58.dp
     val cardRoundedRadius: Dp = 40.dp
     val cardAspectRatio: Float = 0.55f
