@@ -2,11 +2,13 @@ package com.example.composelogin.ui.screens.authscreen.account_setup
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +39,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.composelogin.AuthNavRoutes
 import com.example.composelogin.MainNavRoutes
 import com.example.composelogin.R
 import com.example.composelogin.model.TOTAL_PAGE
@@ -61,17 +64,35 @@ fun SetUpProfileScreenPart2(
             .statusBarsPadding()
             .navigationBarsPadding(),
         topBar = {
-            ProgressBar(
+            AnimatedContent(
                 modifier = Modifier.background(LocalStuddyColors.current.primary700),
-                progressRatio = uiState.currentPage/TOTAL_PAGE.toFloat(),
-                onBackClick = {
-                    if (uiState.currentPage != 1){
-                        viewModel.previousPage()
-                    } else {
-
+                targetState = uiState.currentPage,
+                transitionSpec = { fadeIn() togetherWith fadeOut() }, label = ""
+            ){
+                ProgressBar(
+                    modifier = Modifier.background(LocalStuddyColors.current.primary700),
+                    progressRatio = it/TOTAL_PAGE.toFloat(),
+                    onBackClick = {
+                        if (uiState.currentPage != 1){
+                            viewModel.previousPage()
+                        } else {
+                            navController.navigate(AuthNavRoutes.SIGNUP)
+                        }
                     }
-                }
-            )
+                )
+            }
+
+//            ProgressBar(
+//                modifier = Modifier.background(LocalStuddyColors.current.primary700),
+//                progressRatio = uiState.currentPage/TOTAL_PAGE.toFloat(),
+//                onBackClick = {
+//                    if (uiState.currentPage != 1){
+//                        viewModel.previousPage()
+//                    } else {
+//                        navController.navigate(AuthNavRoutes.SIGNUP)
+//                    }
+//                }
+//            )
         }
     ) { innerPadding ->
 

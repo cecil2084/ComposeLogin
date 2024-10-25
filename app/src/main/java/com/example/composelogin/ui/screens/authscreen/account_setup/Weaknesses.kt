@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.composelogin.R
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
+import com.example.composelogin.ui.theme.LocalStuddyColors
 
 @Composable
 fun WeaknessesScreen(
@@ -22,7 +23,7 @@ fun WeaknessesScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = modifier
-            .background(Color.Gray)
+            .background(LocalStuddyColors.current.primary700)
             .fillMaxSize()
     ) {
         Text("Weaknesses")

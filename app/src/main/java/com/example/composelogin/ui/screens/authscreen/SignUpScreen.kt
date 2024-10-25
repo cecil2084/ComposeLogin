@@ -22,14 +22,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -51,6 +48,12 @@ import com.example.composelogin.ui.theme.quicksandFamily
 
 @Composable
 fun MainSignUpScreen(
+    username: String,
+    email: String,
+    password: String,
+    onUsernameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onSignUpClick: () -> Unit,
     onLoginClick: () -> Unit
 ) {
@@ -66,6 +69,12 @@ fun MainSignUpScreen(
             contentAlignment = Alignment.Center
         ) { StuddyLogoStartUpScreen() }
         SignUpContainer(
+            username,
+            email,
+            password,
+            onUsernameChange,
+            onEmailChange,
+            onPasswordChange,
             onSignUpClick,
             onLoginClick
         )
@@ -74,21 +83,24 @@ fun MainSignUpScreen(
 
 @Composable
 fun SignUpContainer(
+    username: String,
+    email: String,
+    password: String,
+    onUsernameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onSignUpClick: () -> Unit,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
 ) {
-    var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
     val text: AnnotatedString = buildAnnotatedString {
-        append("already have an account? ")
+        append(stringResource(R.string.already_have_an_account))
         pushStringAnnotation(tag = "click", annotation = "click")
         withStyle(
             SpanStyle(
                 textDecoration = TextDecoration.Underline,
             )
         ) {
-            append("Login")
+            append(stringResource(R.string.login))
         }
         pop()
     }
@@ -110,7 +122,7 @@ fun SignUpContainer(
         Text(
             fontFamily = fredokaFamily,
             fontWeight = FontWeight.Medium,
-            text = "Sign Up",
+            text = stringResource(R.string.signup),
             fontSize = 32.sp,
             color = LocalStuddyColors.current.lightNeutral600,
             textAlign = TextAlign.Center
@@ -159,32 +171,32 @@ fun SignUpContainer(
         // Input Fields for Sign Up
         StuddyTextFieldGray(
             value = username,
-            onValueChange = { username = it },
-            label = "Username",
-            placeholder = "johnappleseed_2084"
+            onValueChange = onUsernameChange,
+            label = stringResource(R.string.username_label),
+            placeholder = stringResource(R.string.username_placeholder)
         )
         StuddyTextFieldGray(
             value = email,
-            onValueChange = { email = it },
-            label = "Email Address",
-            placeholder = "johnappleseed@apple.com"
+            onValueChange = onEmailChange,
+            label = stringResource(R.string.email_label),
+            placeholder = stringResource(R.string.email_placeholder)
         )
         StuddyTextFieldGray(
             value = password,
-            onValueChange = { password = it },
-            label = "Password",
+            onValueChange = onPasswordChange,
+            label = stringResource(R.string.password_label),
             isPassword = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         StuddyButtonBlue(
-            content = "Sign Up",
+            content = stringResource(R.string.signup),
             onClick = onSignUpClick
         )
 
         Text(
-            text = "or sign up using",
+            text = stringResource(R.string.or_signup_using),
             fontSize = 12.sp,
             fontFamily = quicksandFamily,
             fontWeight = FontWeight.Medium,

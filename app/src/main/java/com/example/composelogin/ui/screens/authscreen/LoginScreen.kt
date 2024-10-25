@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -52,7 +53,12 @@ import com.example.composelogin.ui.theme.quicksandFamily
 
 @Composable
 fun MainLoginScreen(
-    onSignUpClick: () -> Unit
+    email: String,
+    password: String,
+    onEmailChange: (String) -> Unit,
+    onRememberMeToggle: () -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onSignUpClick: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,26 +71,37 @@ fun MainLoginScreen(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
         ) { StuddyLogoStartUpScreen() }
-        LoginContainer(onSignUpClick)
+        LoginContainer(
+            email,
+            password,
+            onEmailChange,
+            onPasswordChange,
+            onRememberMeToggle = {},
+            onSignUpClick,
+        )
     }
 }
 
 @Composable
 fun LoginContainer(
+    email: String,
+    password: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onRememberMeToggle: () -> Unit,
     onSignUpClick: () -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+
     var rememberMe by remember { mutableStateOf(false) }
     val text: AnnotatedString = buildAnnotatedString {
-        append("new to Studdy? ")
+        append(stringResource(R.string.new_to_studdy))
         pushStringAnnotation(tag = "click", annotation = "click")
         withStyle(
             SpanStyle(
                 textDecoration = TextDecoration.Underline,
             )
         ) {
-            append("Sign Up")
+            append(stringResource(R.string.signup))
         }
         pop()
     }
@@ -107,7 +124,7 @@ fun LoginContainer(
         Text(
             fontFamily = fredokaFamily,
             fontWeight = FontWeight.Medium,
-            text = "Log In",
+            text = stringResource(R.string.login),
             fontSize = 32.sp,
             color = LocalStuddyColors.current.lightNeutral600,
             textAlign = TextAlign.Center
@@ -116,14 +133,14 @@ fun LoginContainer(
         // Input Fields for Sign Up
         StuddyTextFieldGray(
             value = email,
-            onValueChange = { email = it },
-            label = "Email Address",
-            placeholder = "johnappleseed@apple.com"
+            onValueChange = onEmailChange,
+            label = stringResource(R.string.email_label),
+            placeholder = stringResource(R.string.email_placeholder)
         )
         StuddyTextFieldGray(
             value = password,
-            onValueChange = { password = it },
-            label = "Password",
+            onValueChange = onPasswordChange,
+            label = stringResource(R.string.password_label),
             isPassword = true
         )
 
@@ -140,7 +157,7 @@ fun LoginContainer(
                     checked = rememberMe,
                     onClick = { rememberMe = !rememberMe })
                 Text(
-                    text = "Remember Me",
+                    text = stringResource(R.string.remember_me),
                     fontSize = 12.sp,
                     fontFamily = quicksandFamily,
                     fontWeight = FontWeight.Medium,
@@ -148,7 +165,7 @@ fun LoginContainer(
                 )
             }
             Text(
-                text = "Forgot Password?",
+                text = stringResource(R.string.forgot_password),
                 fontSize = 12.sp,
                 fontFamily = quicksandFamily,
                 fontWeight = FontWeight.Medium,
@@ -159,14 +176,14 @@ fun LoginContainer(
         Spacer(modifier = Modifier.height(16.dp))
 
         StuddyButtonBlue(
-            content = "Log in",
+            content = stringResource(R.string.login),
             onClick = { }
         )
 
 //            Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "or login using",
+            text = stringResource(R.string.or_login_using),
             fontSize = 12.sp,
             fontFamily = quicksandFamily,
             fontWeight = FontWeight.Medium,

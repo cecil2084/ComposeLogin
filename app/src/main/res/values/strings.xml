@@ -8,4 +8,17 @@
     <string name="academic_skills">Academic Skills</string>
     <string name="other_skills">Other Skills</string>
     <string name="Confirm">Confirm</string>
+    <string name="username_label">Username</string>
+    <string name="email_label">Email Address</string>
+    <string name="password_label">Password</string>
+    <string name="username_placeholder">johnappleseed_2084</string>
+    <string name="email_placeholder">johnappleseed@gmail.com</string>
+    <string name="remember_me">Remember Me</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="login">Log in</string>
+    <string name="or_login_using">or login using</string>
+    <string name="new_to_studdy">new to Studdy? </string>
+    <string name="signup">Sign Up</string>
+    <string name="or_signup_using">or sign up using</string>
+    <string name="already_have_an_account">already have an account? </string>
 </resources>
