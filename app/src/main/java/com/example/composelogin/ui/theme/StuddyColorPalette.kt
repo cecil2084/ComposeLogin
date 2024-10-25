@@ -41,6 +41,8 @@ data class StuddyColorPalette(
     val darkNeutral700: Color = Color.Unspecified,
     val darkNeutral800: Color = Color.Unspecified,
     val darkNeutral900: Color = Color.Unspecified,
+
+    val accent2700: Color = Color.Unspecified
 )
 
 val primary500Light = Color(color = 0xFF86CEF7)
@@ -79,6 +81,8 @@ val darkNeutral700Light = Color(color = 0xFFBFBFBF)
 val darkNeutral800Light = Color(color = 0xFF808080)
 val darkNeutral900Light = Color(color = 0xFF333333)
 
+val accent2700 = Color(0xFFFF9D14)
+
 val StuddyLightPalette = StuddyColorPalette(
     primary500 = primary500Light,
     primary600 = primary600Light,
@@ -114,7 +118,9 @@ val StuddyLightPalette = StuddyColorPalette(
     darkNeutral600 = darkNeutral600Light,
     darkNeutral700 = darkNeutral700Light,
     darkNeutral800 = darkNeutral800Light,
-    darkNeutral900 = darkNeutral900Light
+    darkNeutral900 = darkNeutral900Light,
+
+    accent2700 = accent2700
 )
 
 val StuddyDarkPalette = StuddyColorPalette(

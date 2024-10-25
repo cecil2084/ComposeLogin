@@ -3,6 +3,10 @@ package com.example.composelogin.ui.screens.authscreen.account_setup
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -64,35 +68,17 @@ fun SetUpProfileScreenPart2(
             .statusBarsPadding()
             .navigationBarsPadding(),
         topBar = {
-            AnimatedContent(
+            ProgressBar(
                 modifier = Modifier.background(LocalStuddyColors.current.primary700),
-                targetState = uiState.currentPage,
-                transitionSpec = { fadeIn() togetherWith fadeOut() }, label = ""
-            ){
-                ProgressBar(
-                    modifier = Modifier.background(LocalStuddyColors.current.primary700),
-                    progressRatio = it/TOTAL_PAGE.toFloat(),
-                    onBackClick = {
-                        if (uiState.currentPage != 1){
-                            viewModel.previousPage()
-                        } else {
-                            navController.navigate(AuthNavRoutes.SIGNUP)
-                        }
+                progressRatio = uiState.currentPage/TOTAL_PAGE.toFloat(),
+                onBackClick = {
+                    if (uiState.currentPage != 1){
+                        viewModel.previousPage()
+                    } else {
+                        navController.navigate(AuthNavRoutes.SIGNUP)
                     }
-                )
-            }
-
-//            ProgressBar(
-//                modifier = Modifier.background(LocalStuddyColors.current.primary700),
-//                progressRatio = uiState.currentPage/TOTAL_PAGE.toFloat(),
-//                onBackClick = {
-//                    if (uiState.currentPage != 1){
-//                        viewModel.previousPage()
-//                    } else {
-//                        navController.navigate(AuthNavRoutes.SIGNUP)
-//                    }
-//                }
-//            )
+                }
+            )
         }
     ) { innerPadding ->
 
@@ -100,12 +86,11 @@ fun SetUpProfileScreenPart2(
             modifier = Modifier.background(LocalStuddyColors.current.primary700),
             targetState = uiState.currentPage,
             transitionSpec = {
-                if (pageDirectionState.equals(PageDirection.FORWARD)){
+                if (pageDirectionState.equals(PageDirection.FORWARD)) {
                     (slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) + fadeIn()).togetherWith(
                         slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth }) + fadeOut()
                     )
-                }
-                else{
+                } else {
                     (slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) + fadeIn()).togetherWith(
                         slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
                     )
@@ -116,7 +101,7 @@ fun SetUpProfileScreenPart2(
                 1 -> StrengthsScreen(onConfirmClick = { viewModel.nextPage() })
                 2 -> WeaknessesScreen(onConfirmClick = { viewModel.nextPage() })
                 3 -> PreferredStudyTimeScreen(onConfirmClick = { viewModel.nextPage() })
-                4 -> PreferredStudyFrequency (onConfirmClick = { viewModel.nextPage() })
+                4 -> PreferredStudyFrequency(onConfirmClick = { viewModel.nextPage() })
                 5 -> PreferredTraits(onConfirmClick = { navController.navigate(MainNavRoutes.MAIN) })
             }
         }
@@ -129,6 +114,11 @@ fun ProgressBar(
     progressRatio: Float = 0f,
     onBackClick: () -> Unit
 ) {
+    val ratio by animateFloatAsState(
+        targetValue = progressRatio,
+        animationSpec = tween(durationMillis = 120, easing = FastOutSlowInEasing),
+        label = "ratio animation"
+    )
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -144,20 +134,19 @@ fun ProgressBar(
                 tint = Color.White
             )
         }
-
         Box(
             modifier = Modifier
                 .padding(end = 25.dp)
                 .clip(RoundedCornerShape(100.dp))
                 .fillMaxWidth()
                 .background(LocalStuddyColors.current.darkNeutral600)
-                .aspectRatio(10f)
+                .aspectRatio(15f)
         ) {
-            val progressColor: Color = LocalStuddyColors.current.warning700
+            val progressColor: Color = LocalStuddyColors.current.accent2700
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawRoundRect(
                     color = progressColor,
-                    size = Size(this.size.width * progressRatio, this.size.height),
+                    size = Size(this.size.width * ratio, this.size.height),
                     cornerRadius = CornerRadius(this.size.height)
                 )
             }

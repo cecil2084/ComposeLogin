@@ -93,7 +93,7 @@ fun SignUpContainer(
     onLoginClick: () -> Unit,
 ) {
     val text: AnnotatedString = buildAnnotatedString {
-        append(stringResource(R.string.already_have_an_account))
+        append(stringResource(R.string.already_have_an_account) + " ")
         pushStringAnnotation(tag = "click", annotation = "click")
         withStyle(
             SpanStyle(

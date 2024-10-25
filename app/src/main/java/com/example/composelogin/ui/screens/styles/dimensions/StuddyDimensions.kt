@@ -4,6 +4,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object StuddyDimensions {
+    val buttonBorderRadius: Dp = 20.dp
     val iconSmall: Dp = 20.dp
     val iconMedium: Dp = 48.dp
     val iconPadding: Dp = 20.dp

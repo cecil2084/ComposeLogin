@@ -55,6 +55,7 @@ import com.example.composelogin.ui.theme.quicksandFamily
 fun MainLoginScreen(
     email: String,
     password: String,
+    rememberMe: Boolean,
     onEmailChange: (String) -> Unit,
     onRememberMeToggle: () -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -74,9 +75,10 @@ fun MainLoginScreen(
         LoginContainer(
             email,
             password,
+            rememberMe,
             onEmailChange,
             onPasswordChange,
-            onRememberMeToggle = {},
+            onRememberMeToggle,
             onSignUpClick,
         )
     }
@@ -86,15 +88,15 @@ fun MainLoginScreen(
 fun LoginContainer(
     email: String,
     password: String,
+    rememberMe: Boolean,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onRememberMeToggle: () -> Unit,
+    onRememberMeChange: () -> Unit,
     onSignUpClick: () -> Unit
 ) {
 
-    var rememberMe by remember { mutableStateOf(false) }
     val text: AnnotatedString = buildAnnotatedString {
-        append(stringResource(R.string.new_to_studdy))
+        append(stringResource(R.string.new_to_studdy) + " ")
         pushStringAnnotation(tag = "click", annotation = "click")
         withStyle(
             SpanStyle(
@@ -155,7 +157,7 @@ fun LoginContainer(
                 StuddyToggleButton(
                     enabled = true,
                     checked = rememberMe,
-                    onClick = { rememberMe = !rememberMe })
+                    onClick = onRememberMeChange)
                 Text(
                     text = stringResource(R.string.remember_me),
                     fontSize = 12.sp,

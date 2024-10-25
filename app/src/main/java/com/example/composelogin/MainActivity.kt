@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
                             MainLoginScreen(
                                 email = uiState.email,
                                 password = uiState.password,
+                                rememberMe = uiState.rememberMe,
                                 onEmailChange = { viewModel.onEmailChange(it) },
                                 onPasswordChange = { viewModel.onPasswordChange(it) },
                                 onRememberMeToggle = { viewModel.onRememberMeChange() },

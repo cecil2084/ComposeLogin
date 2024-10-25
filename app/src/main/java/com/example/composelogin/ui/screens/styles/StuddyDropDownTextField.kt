@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
 import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.theme.quicksandFamily
 
@@ -52,7 +54,7 @@ private fun StuddyDropDownTextField(
         if (!enabled) LocalStuddyColors.current.primary500 else if (isError) LocalStuddyColors.current.error700 else Color.White
     val strokeWidth: Float =
         with(LocalDensity.current) { if (!isFocused) 1.dp.toPx() else 2.dp.toPx() }
-    val borderRadius: Float = with(LocalDensity.current) { 20.dp.toPx() }
+    val borderRadius: Float = with(LocalDensity.current) { StuddyDimensions.buttonBorderRadius.toPx() }
     val leftCutPosition: Float = with(LocalDensity.current) { 32.dp.toPx() }
     val selectionTextWeight = if (isFocused) FontWeight.Bold else FontWeight.Medium
     val labelCutoutPadding: Float = with(LocalDensity.current) { 6.dp.toPx() }
@@ -81,11 +83,9 @@ private fun StuddyDropDownTextField(
 
     Box(
         modifier = Modifier
-            .clickable {
-                onClick()
-            }
             .padding(top = labelTextSizeDp / 2)
             .width(width)
+            .clip(shape = RoundedCornerShape(StuddyDimensions.buttonBorderRadius))
             .drawBehind {
                 clipRect(
                     top = 0f,
@@ -106,9 +106,10 @@ private fun StuddyDropDownTextField(
                     )
                 }
             }
+            .clickable{
+                onClick()
+            }
             .padding(vertical = paddingVertical, horizontal = paddingHorizontal)
-
-
     ) {
         Text(
             maxLines = 1,
@@ -151,7 +152,7 @@ fun StuddyDropDownMenu(
         )
         if (enabled) {
             MaterialTheme(
-                shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(20.dp)),
+                shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(StuddyDimensions.buttonBorderRadius)),
                 colorScheme = MaterialTheme.colorScheme.copy(surface = Color.White)
             ) {
                 DropdownMenu(
