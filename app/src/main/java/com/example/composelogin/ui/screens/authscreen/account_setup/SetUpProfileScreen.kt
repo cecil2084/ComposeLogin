@@ -1,11 +1,10 @@
-package com.example.composelogin.ui.screens
+package com.example.composelogin.ui.screens.authscreen.account_setup
 
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +46,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -335,14 +333,18 @@ fun ProfileDetailsMainInterface(
         }
 
 
-        StuddyButtonWhite(content = if (currentPage < pageTotal) "Next" else "Confirm", onClick = {
-            if (currentPage < pageTotal) {
-                currentPage++
-            } else {
-                onConfirmClick()
-                //GOTO SIGN UP SCREEN
-            }
-        })
+        Row(
+            verticalAlignment = Alignment.Top
+        ) {
+            StuddyButtonWhite(content = if (currentPage < pageTotal) "Next" else "Confirm", onClick = {
+                if (currentPage < pageTotal) {
+                    currentPage++
+                } else {
+                    onConfirmClick()
+                    //GOTO SIGN UP SCREEN
+                }
+            })
+        }
     }
 }
 

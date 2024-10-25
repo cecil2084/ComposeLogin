@@ -21,13 +21,14 @@ import com.example.composelogin.ui.theme.quicksandFamily
 fun StuddyButtonWhite(
     content: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     width: Dp = 265.dp,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     Button(
         enabled = enabled,
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .width(width),
         contentPadding = PaddingValues(vertical = 12.dp),
         shape = RoundedCornerShape(20.dp),

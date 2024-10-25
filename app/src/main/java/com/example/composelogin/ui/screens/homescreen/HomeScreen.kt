@@ -10,35 +10,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.composelogin.NavRoutes
-import com.example.composelogin.R
+import com.example.composelogin.MainNavRoutes
 import com.example.composelogin.model.mockProfile
 import com.example.composelogin.ui.screens.styles.StuddyLogoStartUpScreenSmaller
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
 import com.example.composelogin.ui.theme.LocalStuddyColors
-import com.example.composelogin.ui.viewmodels.HomeViewModel
 
 @Composable
 fun MainScreenApp(
@@ -62,12 +52,12 @@ fun MainScreenApp(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = NavRoutes.HOME,
+            startDestination = MainNavRoutes.HOME,
             Modifier.padding(innerPadding),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }
         ) {
-            composable(NavRoutes.HOME) {
+            composable(MainNavRoutes.HOME) {
                 HomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
@@ -83,7 +73,7 @@ fun MainScreenApp(
                 )
             }
 
-            composable(NavRoutes.MATCHES) {
+            composable(MainNavRoutes.MATCHES) {
                 MatchesScreen(
                     modifier = Modifier
                         .fillMaxSize()
@@ -99,7 +89,7 @@ fun MainScreenApp(
                 )
             }
 
-            composable(NavRoutes.MESSAGES) {
+            composable(MainNavRoutes.MESSAGES) {
                 MessagesScreen(
                     modifier = Modifier
                         .fillMaxSize()
@@ -115,7 +105,7 @@ fun MainScreenApp(
                 )
             }
 
-            composable(NavRoutes.STUDDY_FEED) {
+            composable(MainNavRoutes.STUDDY_FEED) {
                 StuddyFeedScreen(
                     modifier = Modifier
                         .fillMaxSize()
@@ -131,7 +121,7 @@ fun MainScreenApp(
                 )
             }
 
-            composable(NavRoutes.WEEKLY_CHALLENGES) {
+            composable(MainNavRoutes.WEEKLY_CHALLENGES) {
                 WeeklyChallengeScreen(
                     modifier = Modifier
                         .fillMaxSize()
@@ -147,7 +137,7 @@ fun MainScreenApp(
                 )
             }
 
-            composable(NavRoutes.USER_PREFS) {
+            composable(MainNavRoutes.USER_PREFS) {
                 UserPrefsScreen(
                     modifier = Modifier
                         .fillMaxSize()

@@ -4,22 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.composelogin.ui.screens.authscreen.MainLoginScreen
+import com.example.composelogin.ui.screens.authscreen.account_setup.MainProfileDetailsSetUp
+import com.example.composelogin.ui.screens.authscreen.MainSignUpScreen
+import com.example.composelogin.ui.screens.authscreen.account_setup.SetUpProfileScreenPart2
 import com.example.composelogin.ui.screens.homescreen.MainScreenApp
-import com.example.composelogin.ui.screens.MainLoginScreen
-import com.example.composelogin.ui.screens.MainProfileDetailsSetUp
-import com.example.composelogin.ui.screens.MainSignUpScreen
 import com.example.composelogin.ui.theme.ComposeLoginTheme
-import com.example.composelogin.ui.viewmodels.HomeViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,40 +23,48 @@ class MainActivity : ComponentActivity() {
             ComposeLoginTheme {
 
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = NavRoutes.AUTH) {
-                    navigation(route = NavRoutes.AUTH, startDestination = NavRoutes.SIGNUP){
-                        composable(route = NavRoutes.SIGNUP) {
+                NavHost(navController = navController, startDestination = AuthNavRoutes.AUTH) {
+                    navigation(route = AuthNavRoutes.AUTH, startDestination = AuthNavRoutes.SIGNUP) {
+                        composable(route = AuthNavRoutes.SIGNUP) {
                             MainSignUpScreen(
-                                onSignUpClick = { navController.navigate(NavRoutes.SETUP_PROFILE) },
-                                onLoginClick = { navController.navigate(NavRoutes.LOGIN) }
+                                onSignUpClick = { navController.navigate(AuthNavRoutes.SETUP_PROFILE) },
+                                onLoginClick = { navController.navigate(AuthNavRoutes.LOGIN) }
                             )
                         }
 
-                        composable(route = NavRoutes.LOGIN) {
+                        composable(route = AuthNavRoutes.LOGIN) {
                             MainLoginScreen(
-                                onSignUpClick = { navController.navigate(NavRoutes.SIGNUP) },
+                                onSignUpClick = { navController.navigate(AuthNavRoutes.SIGNUP) },
                             )
                         }
 
-                        composable(route = NavRoutes.SETUP_PROFILE) {
+                        composable(route = AuthNavRoutes.SETUP_PROFILE) {
                             MainProfileDetailsSetUp(
-                                onSignUpClick = { navController.navigate(NavRoutes.SETUP_PROFILE) },
+                                onSignUpClick = { navController.navigate(AuthNavRoutes.SIGNUP) },
                                 onConfirmClick = {
-                                    navController.navigate(NavRoutes.MAIN) {
+                                    navController.navigate(SetUpNavRoutes.SETUP_PROFILE_PART2) {
                                         popUpTo(navController.graph.startDestinationId)
                                         launchSingleTop = true
                                     }
                                 }
                             )
                         }
+
+                        composable(route = SetUpNavRoutes.SETUP_PROFILE_PART2) {
+                            val setupPart2NavController = rememberNavController()
+                            SetUpProfileScreenPart2(
+                                navController = setupPart2NavController,
+                                onConfirmLastClick = {navController.navigate(MainNavRoutes.MAIN)}
+                            )
+                        }
                     }
 
-                    composable(route = NavRoutes.MAIN) {
+                    composable(route = MainNavRoutes.MAIN) {
                         val homeNavController = rememberNavController()
                         MainScreenApp(
                             navController = homeNavController,
                             onLogOut = {
-                                navController.navigate(NavRoutes.SIGNUP) {
+                                navController.navigate(AuthNavRoutes.SIGNUP) {
                                     popUpTo(navController.graph.startDestinationId)
                                     launchSingleTop = true
                                 }
