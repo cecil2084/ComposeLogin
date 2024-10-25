@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composelogin.R
+import com.example.composelogin.data.skillsList
 import com.example.composelogin.model.Skill
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
@@ -115,7 +116,7 @@ fun StrengthsListInterface(
     modifier: Modifier = Modifier,
     strengthsList: List<Skill>
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
 //            .heightIn(min = 300.dp)
@@ -130,14 +131,16 @@ fun StrengthsListInterface(
             verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
         ) {
             strengthsList.forEach {
-                skillPillRemovable(skill = it, onSkillRemove = {})
+                SkillPillRemovable(skill = it, onSkillRemove = {})
             }
         }
+
+        SuggestionTextField(skillsList)
     }
 }
 
 @Composable
-fun skillPillRemovable(
+fun SkillPillRemovable(
     modifier: Modifier = Modifier,
     skill: Skill,
     onSkillRemove: () -> Unit
@@ -180,13 +183,13 @@ fun skillPillRemovable(
 
 @Composable
 fun SuggestionTextField(
-    possibleInputs: List<String> // List of possible suggestions
+    possibleInputs: List<Skill>
 ) {
     // State to hold the current text input and suggestions
     var text by remember { mutableStateOf("") }
     val suggestions = remember(text) {
         // Filter the suggestions based on the current input
-        possibleInputs.filter { it.contains(text, ignoreCase = true) }
+        possibleInputs.filter { it.name.contains(text, ignoreCase = true) }
     }
 
     Column {
@@ -210,8 +213,8 @@ fun SuggestionTextField(
             ) {
                 items(suggestions) { suggestion ->
                     // Suggestion item
-                    SuggestionItem(suggestion) {
-                        text = suggestion // Update text when suggestion is clicked
+                    SuggestionItem(suggestion.name) {
+                        text = suggestion.name // Update text when suggestion is clicked
                     }
                 }
             }
