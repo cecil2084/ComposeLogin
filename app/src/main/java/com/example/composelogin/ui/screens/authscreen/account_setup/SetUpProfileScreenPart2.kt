@@ -2,15 +2,11 @@ package com.example.composelogin.ui.screens.authscreen.account_setup
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -41,13 +36,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import com.example.composelogin.MainNavRoutes
 import com.example.composelogin.R
-import com.example.composelogin.SetUpNavRoutes
+import com.example.composelogin.model.TOTAL_PAGE
 import com.example.composelogin.ui.enums.PageDirection
 import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.viewmodels.SetUpViewModel
@@ -71,7 +63,7 @@ fun SetUpProfileScreenPart2(
         topBar = {
             ProgressBar(
                 modifier = Modifier.background(LocalStuddyColors.current.primary700),
-                progressRatio = 0.4f,
+                progressRatio = uiState.currentPage/TOTAL_PAGE.toFloat(),
                 onBackClick = {
                     if (uiState.currentPage != 1){
                         viewModel.previousPage()
@@ -84,6 +76,7 @@ fun SetUpProfileScreenPart2(
     ) { innerPadding ->
 
         AnimatedContent(
+            modifier = Modifier.background(LocalStuddyColors.current.primary700),
             targetState = uiState.currentPage,
             transitionSpec = {
                 if (pageDirectionState.equals(PageDirection.FORWARD)){
@@ -106,36 +99,6 @@ fun SetUpProfileScreenPart2(
                 5 -> PreferredTraits(onConfirmClick = { navController.navigate(MainNavRoutes.MAIN) })
             }
         }
-
-//        NavHost(
-//            navController = navController,
-//            startDestination = SetUpNavRoutes.STRENGTHS,
-//            Modifier.padding(innerPadding),
-//            enterTransition = { EnterTransition.None },
-//            exitTransition = { ExitTransition.None }
-//        ) {
-//            composable(route = SetUpNavRoutes.STRENGTHS) {
-//                StrengthsScreen(
-//                    onConfirmClick = {}
-//                )
-//            }
-//
-//            composable(route = SetUpNavRoutes.WEAKNESSES) {
-//
-//            }
-//
-//            composable(route = SetUpNavRoutes.PREFERRED_STUDY_TIME) {
-//
-//            }
-//
-//            composable(route = SetUpNavRoutes.PREFERRED_FREQUENCY) {
-//
-//            }
-//
-//            composable(route = SetUpNavRoutes.PREFERRED_TRAITS) {
-//
-//            }
-//        }
     }
 }
 
