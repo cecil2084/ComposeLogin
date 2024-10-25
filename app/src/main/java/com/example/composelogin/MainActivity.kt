@@ -51,10 +51,9 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(route = SetUpNavRoutes.SETUP_PROFILE_PART2) {
-                            val setupPart2NavController = rememberNavController()
                             SetUpProfileScreenPart2(
-                                navController = setupPart2NavController,
-                                onConfirmLastClick = {navController.navigate(MainNavRoutes.MAIN)}
+                                onConfirmLastClick = {navController.navigate(MainNavRoutes.MAIN)},
+                                navController = navController
                             )
                         }
                     }

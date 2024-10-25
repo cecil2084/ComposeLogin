@@ -1,8 +1,16 @@
 package com.example.composelogin.ui.screens.authscreen.account_setup
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,11 +41,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.composelogin.MainNavRoutes
 import com.example.composelogin.R
 import com.example.composelogin.SetUpNavRoutes
+import com.example.composelogin.ui.enums.PageDirection
 import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.viewmodels.SetUpViewModel
 
@@ -46,10 +57,11 @@ import com.example.composelogin.ui.viewmodels.SetUpViewModel
 fun SetUpProfileScreenPart2(
     modifier: Modifier = Modifier,
     viewModel: SetUpViewModel = viewModel(),
-    navController: NavHostController,
-    onConfirmLastClick: () -> Unit
+    onConfirmLastClick: () -> Unit,
+    navController: NavHostController
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val pageDirectionState by viewModel.pageDirectionState.collectAsState()
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -61,17 +73,40 @@ fun SetUpProfileScreenPart2(
                 modifier = Modifier.background(LocalStuddyColors.current.primary700),
                 progressRatio = 0.4f,
                 onBackClick = {
+                    if (uiState.currentPage != 1){
+                        viewModel.previousPage()
+                    } else {
 
+                    }
                 }
             )
         }
     ) { innerPadding ->
 
-        when (uiState.currentPage) {
-            1 -> StrengthsScreen(onConfirmClick = {viewModel.nextPage()})
-            2 -> Text("sdfijsdfljfljk")
-
+        AnimatedContent(
+            targetState = uiState.currentPage,
+            transitionSpec = {
+                if (pageDirectionState.equals(PageDirection.FORWARD)){
+                    (slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) + fadeIn()).togetherWith(
+                        slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth }) + fadeOut()
+                    )
+                }
+                else{
+                    (slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) + fadeIn()).togetherWith(
+                        slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
+                    )
+                }
+            }, label = ""
+        ) {
+            when (it) {
+                1 -> StrengthsScreen(onConfirmClick = { viewModel.nextPage() })
+                2 -> WeaknessesScreen(onConfirmClick = { viewModel.nextPage() })
+                3 -> PreferredStudyTimeScreen(onConfirmClick = { viewModel.nextPage() })
+                4 -> PreferredStudyFrequency (onConfirmClick = { viewModel.nextPage() })
+                5 -> PreferredTraits(onConfirmClick = { navController.navigate(MainNavRoutes.MAIN) })
+            }
         }
+
 //        NavHost(
 //            navController = navController,
 //            startDestination = SetUpNavRoutes.STRENGTHS,

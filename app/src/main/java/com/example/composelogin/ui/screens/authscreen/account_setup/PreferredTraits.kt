@@ -14,7 +14,7 @@ import com.example.composelogin.R
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
 
 @Composable
-fun StrengthsScreen(
+fun PreferredTraits(
     modifier: Modifier = Modifier,
     onConfirmClick: () -> Unit
 ) {
@@ -25,36 +25,10 @@ fun StrengthsScreen(
             .background(Color.Gray)
             .fillMaxSize()
     ) {
-        Text("Strengths")
+        Text("Preferred Traits")
         StuddyButtonWhite(
             stringResource(R.string.Confirm),
             onClick = onConfirmClick,
         )
     }
 }
-
-//@Composable
-//fun StrengthsScreen(
-//    onConfirmClick: () -> Unit,
-//    onBackClick: () -> Unit,
-//    modifier: Modifier = Modifier
-//) {
-//    Column(
-//        verticalArrangement = Arrangement.SpaceBetween,
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        modifier = modifier
-//            .fillMaxSize()
-//            .background(LocalStuddyColors.current.primary700)
-//            .statusBarsPadding()
-//            .navigationBarsPadding()
-//    ) {
-//        ProgressBar(progressRatio = 0.4f)
-//
-//        MockDisplay(modifier.weight(1f))
-//
-//        StuddyButtonWhite(
-//            stringResource(R.string.Confirm),
-//            onClick = {},
-//        )
-//    }
-//}
