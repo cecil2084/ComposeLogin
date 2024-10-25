@@ -52,9 +52,9 @@ fun SetUpProfileScreenPart2(
     Scaffold(
         modifier = modifier
             .fillMaxSize()
-            .background(LocalStuddyColors.current.primary700)
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+            .background(LocalStuddyColors.current.primary700),
+//            .statusBarsPadding()
+//            .navigationBarsPadding(),
         topBar = {
             ProgressBar(
                 modifier = Modifier.background(LocalStuddyColors.current.primary700),
