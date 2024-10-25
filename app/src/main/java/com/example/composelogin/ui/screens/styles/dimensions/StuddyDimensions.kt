@@ -16,4 +16,7 @@ object StuddyDimensions {
     val pillsSpacing: Dp = 6.dp
     val pillTextPadding: Dp = 6.dp
     val cardSectionSpacing: Dp = 20.dp
+
+    val borderRadiusSmall: Dp = 12.dp
+    val skillListInterfacePadding: Dp = 8.dp
 }

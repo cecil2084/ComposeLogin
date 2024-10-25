@@ -98,6 +98,7 @@ fun SetUpProfileScreenPart2(
         ) {
             when (it) {
                 1 -> StrengthsScreen(
+                    skillSet = uiState.strengths,
                     modifier = Modifier.padding(innerPadding),
                     onConfirmClick = { viewModel.nextPage() })
 
@@ -131,7 +132,7 @@ fun ProgressBar(
 ) {
     val ratio by animateFloatAsState(
         targetValue = progressRatio,
-        animationSpec = tween(durationMillis = 120, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
         label = "ratio animation"
     )
     Row(

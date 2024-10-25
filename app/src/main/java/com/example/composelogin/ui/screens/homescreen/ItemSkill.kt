@@ -16,7 +16,7 @@ import com.example.composelogin.ui.theme.StuddyTypography
 fun ItemSkillPill(skillName : String, modifier: Modifier = Modifier){
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(50))
+            .clip(RoundedCornerShape(StuddyDimensions.buttonBorderRadius))
             .background(LocalStuddyColors.current.primary500)
             .padding(vertical = StuddyDimensions.pillTextPadding, horizontal = StuddyDimensions.pillTextPadding)
     ) {
