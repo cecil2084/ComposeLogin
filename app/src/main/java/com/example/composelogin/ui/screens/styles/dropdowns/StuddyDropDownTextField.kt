@@ -1,4 +1,4 @@
-package com.example.composelogin.ui.screens.styles
+package com.example.composelogin.ui.screens.styles.dropdowns
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

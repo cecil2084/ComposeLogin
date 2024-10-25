@@ -63,16 +63,15 @@ fun SetUpProfileScreenPart2(
     val pageDirectionState by viewModel.pageDirectionState.collectAsState()
     Scaffold(
         modifier = modifier
-            .fillMaxSize()
             .background(LocalStuddyColors.current.primary700)
             .statusBarsPadding()
             .navigationBarsPadding(),
         topBar = {
             ProgressBar(
                 modifier = Modifier.background(LocalStuddyColors.current.primary700),
-                progressRatio = uiState.currentPage/TOTAL_PAGE.toFloat(),
+                progressRatio = uiState.currentPage / TOTAL_PAGE.toFloat(),
                 onBackClick = {
-                    if (uiState.currentPage != 1){
+                    if (uiState.currentPage != 1) {
                         viewModel.previousPage()
                     } else {
                         navController.navigate(AuthNavRoutes.SIGNUP)
@@ -98,11 +97,27 @@ fun SetUpProfileScreenPart2(
             }, label = ""
         ) {
             when (it) {
-                1 -> StrengthsScreen(onConfirmClick = { viewModel.nextPage() })
-                2 -> WeaknessesScreen(onConfirmClick = { viewModel.nextPage() })
-                3 -> PreferredStudyTimeScreen(onConfirmClick = { viewModel.nextPage() })
-                4 -> PreferredStudyFrequency(onConfirmClick = { viewModel.nextPage() })
-                5 -> PreferredTraits(onConfirmClick = { navController.navigate(MainNavRoutes.MAIN) })
+                1 -> StrengthsScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    onConfirmClick = { viewModel.nextPage() })
+
+                2 -> WeaknessesScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    onConfirmClick = { viewModel.nextPage() })
+
+                3 -> PreferredStudyTimeScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    onConfirmClick = { viewModel.nextPage() })
+
+                4 -> PreferredStudyFrequency(
+                    modifier = Modifier.padding(innerPadding),
+                    onConfirmClick = { viewModel.nextPage() }
+                )
+
+                5 -> PreferredTraits(
+                    modifier = Modifier.padding(innerPadding),
+                    onConfirmClick = onConfirmLastClick,
+                    )
             }
         }
     }

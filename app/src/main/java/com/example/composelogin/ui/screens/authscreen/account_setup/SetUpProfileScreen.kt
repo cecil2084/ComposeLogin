@@ -56,7 +56,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.composelogin.R
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
-import com.example.composelogin.ui.screens.styles.StuddyDropDownMenu
+import com.example.composelogin.ui.screens.styles.dropdowns.StuddyDropDownMenu
 import com.example.composelogin.ui.screens.styles.textfields.StuddyTextFieldWhite
 import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.theme.fredokaFamily

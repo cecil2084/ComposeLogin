@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composelogin.R
 import com.example.composelogin.ui.theme.LocalStuddyColors
-import com.example.composelogin.ui.screens.styles.StuddyPasswordVisualTransformation
 import com.example.composelogin.ui.theme.quicksandFamily
 
 @Composable

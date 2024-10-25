@@ -1,4 +1,4 @@
-package com.example.composelogin.ui.screens.styles
+package com.example.composelogin.ui.screens.styles.textfields
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle

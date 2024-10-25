@@ -21,4 +21,7 @@
     <string name="signup">Sign Up</string>
     <string name="or_signup_using">or sign up using</string>
     <string name="already_have_an_account">already have an account?</string>
+
+    <string name="strengths">Strengths</string>
+    <string name="strengths_info">Do you have skills that you excel in and feel comfortable teaching others? Add them here.</string>
 </resources>
