@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,9 +53,9 @@ fun SetUpProfileScreenPart2(
     Scaffold(
         modifier = modifier
             .fillMaxSize()
-            .background(LocalStuddyColors.current.primary700),
-//            .statusBarsPadding()
-//            .navigationBarsPadding(),
+            .background(LocalStuddyColors.current.primary700)
+            .statusBarsPadding()
+            .navigationBarsPadding(),
         topBar = {
             ProgressBar(
                 modifier = Modifier.background(LocalStuddyColors.current.primary700),
@@ -65,35 +66,41 @@ fun SetUpProfileScreenPart2(
             )
         }
     ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = SetUpNavRoutes.STRENGTHS,
-            Modifier.padding(innerPadding),
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None }
-        ) {
-            composable(route = SetUpNavRoutes.STRENGTHS) {
-                StrengthsScreen(
-                    onConfirmClick = {}
-                )
-            }
 
-            composable(route = SetUpNavRoutes.WEAKNESSES) {
+        when (uiState.currentPage) {
+            1 -> StrengthsScreen(onConfirmClick = {viewModel.nextPage()})
+            2 -> Text("sdfijsdfljfljk")
 
-            }
-
-            composable(route = SetUpNavRoutes.PREFERRED_STUDY_TIME) {
-
-            }
-
-            composable(route = SetUpNavRoutes.PREFERRED_FREQUENCY) {
-
-            }
-
-            composable(route = SetUpNavRoutes.PREFERRED_TRAITS) {
-
-            }
         }
+//        NavHost(
+//            navController = navController,
+//            startDestination = SetUpNavRoutes.STRENGTHS,
+//            Modifier.padding(innerPadding),
+//            enterTransition = { EnterTransition.None },
+//            exitTransition = { ExitTransition.None }
+//        ) {
+//            composable(route = SetUpNavRoutes.STRENGTHS) {
+//                StrengthsScreen(
+//                    onConfirmClick = {}
+//                )
+//            }
+//
+//            composable(route = SetUpNavRoutes.WEAKNESSES) {
+//
+//            }
+//
+//            composable(route = SetUpNavRoutes.PREFERRED_STUDY_TIME) {
+//
+//            }
+//
+//            composable(route = SetUpNavRoutes.PREFERRED_FREQUENCY) {
+//
+//            }
+//
+//            composable(route = SetUpNavRoutes.PREFERRED_TRAITS) {
+//
+//            }
+//        }
     }
 }
 
