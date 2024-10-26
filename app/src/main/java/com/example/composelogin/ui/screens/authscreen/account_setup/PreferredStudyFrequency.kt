@@ -17,7 +17,6 @@ import com.example.composelogin.ui.theme.LocalStuddyColors
 @Composable
 fun PreferredStudyFrequency(
     modifier: Modifier = Modifier,
-    onConfirmClick: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -27,9 +26,5 @@ fun PreferredStudyFrequency(
             .fillMaxSize()
     ) {
         Text("Preferred Study Frequency")
-        StuddyButtonWhite(
-            stringResource(R.string.Confirm),
-            onClick = onConfirmClick,
-        )
     }
 }

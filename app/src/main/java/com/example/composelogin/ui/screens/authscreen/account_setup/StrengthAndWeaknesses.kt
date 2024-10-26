@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -18,12 +17,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,17 +37,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composelogin.R
-import com.example.composelogin.data.skillsList
 import com.example.composelogin.model.Skill
-import com.example.composelogin.model.SkillListState
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
 import com.example.composelogin.ui.theme.LocalStuddyColors
@@ -57,7 +51,7 @@ import com.example.composelogin.ui.theme.StuddyTypography
 import com.example.composelogin.ui.theme.fredokaFamily
 
 @Composable
-fun StrengthsScreen(
+fun StrengthsAndWeaknessesScreen(
     onBrowserSkillClick: () -> Unit,
     skillSet: List<Skill>,
     modifier: Modifier = Modifier,
@@ -68,15 +62,20 @@ fun StrengthsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = modifier
-            .background(LocalStuddyColors.current.primary700)
+            .background(Color.Transparent)
             .fillMaxSize()
             .padding(20.dp)
     ) {
         Column(
             modifier = Modifier
+                .background(LocalStuddyColors.current.primary700)
                 .fillMaxSize()
                 .weight(1f)
+                .verticalScroll(rememberScrollState())
+
         ) {
+            /* STRENGTHS */
+
             Text(
                 text = stringResource(R.string.strengths),
                 fontFamily = fredokaFamily,
@@ -98,7 +97,6 @@ fun StrengthsScreen(
             StrengthsListInterface(
                 modifier = Modifier
                     .fillMaxWidth()
-//            .heightIn(min = 300.dp)
                     .border(
                         BorderStroke(1.dp, Color.White),
                         shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
@@ -108,12 +106,48 @@ fun StrengthsScreen(
                 strengthsList = skillSet,
                 onSkillRemove = onSkillRemove
             )
-        }
 
-        StuddyButtonWhite(
-            stringResource(R.string.Confirm),
-            onClick = onConfirmClick,
-        )
+            /* SPACER */
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            /* WEAKNESSES */
+
+            Text(
+                text = stringResource(R.string.Weaknesses),
+                fontFamily = fredokaFamily,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                fontSize = 20.sp,
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = stringResource(R.string.weaknesses_info),
+                style = StuddyTypography.pXS,
+                color = Color.White,
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            StrengthsListInterface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        BorderStroke(1.dp, Color.White),
+                        shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
+                    )
+                    .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)),
+                onBrowserSkillClick = onBrowserSkillClick,
+                strengthsList = skillSet,
+                onSkillRemove = onSkillRemove
+            )
+
+            /* SPACER */
+
+            Spacer(modifier = Modifier.height(150.dp))
+        }
     }
 }
 

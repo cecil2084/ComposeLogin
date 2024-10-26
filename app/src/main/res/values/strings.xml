@@ -24,4 +24,7 @@
 
     <string name="strengths">Strengths</string>
     <string name="strengths_info">Do you have skills that you excel in and feel comfortable teaching others? Add them here.</string>
+
+    <string name="Weaknesses">Weaknesses</string>
+    <string name="weaknesses_info">Do you have any skills that you are struggling with and need help from others? Add them here.</string>
 </resources>

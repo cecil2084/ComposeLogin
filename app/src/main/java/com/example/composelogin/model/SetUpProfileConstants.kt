@@ -1,3 +1,3 @@
 package com.example.composelogin.model
 
-val TOTAL_PAGE = 5
+val TOTAL_PAGE = 4

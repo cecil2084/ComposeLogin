@@ -16,8 +16,7 @@ import com.example.composelogin.ui.theme.LocalStuddyColors
 
 @Composable
 fun PreferredTraits(
-    modifier: Modifier = Modifier,
-    onConfirmClick: () -> Unit
+    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -27,9 +26,5 @@ fun PreferredTraits(
             .fillMaxSize()
     ) {
         Text("Preferred Traits")
-        StuddyButtonWhite(
-            stringResource(R.string.Confirm),
-            onClick = onConfirmClick,
-        )
     }
 }
