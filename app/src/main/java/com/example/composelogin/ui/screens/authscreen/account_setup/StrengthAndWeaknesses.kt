@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composelogin.R
 import com.example.composelogin.model.Skill
-import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
 import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.theme.StuddyTypography
@@ -52,12 +51,15 @@ import com.example.composelogin.ui.theme.fredokaFamily
 
 @Composable
 fun StrengthsAndWeaknessesScreen(
-    onBrowserSkillClick: () -> Unit,
-    skillSet: List<Skill>,
+    strengthSkillSet: List<Skill>,
+    weaknessSkillSet: List<Skill>,
     modifier: Modifier = Modifier,
-    onSkillRemove: (Skill) -> Unit,
-    onConfirmClick: () -> Unit,
-) {
+    onStrengthBrowserSkillClick: () -> Unit,
+    onWeaknessBrowserSkillClick: () -> Unit,
+    onStrengthSkillRemove: (Skill) -> Unit,
+    onWeaknessSkillRemove: (Skill) -> Unit
+
+    ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -94,7 +96,7 @@ fun StrengthsAndWeaknessesScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            StrengthsListInterface(
+            SkillsListInterface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
@@ -102,9 +104,9 @@ fun StrengthsAndWeaknessesScreen(
                         shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
                     )
                     .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)),
-                onBrowserSkillClick = onBrowserSkillClick,
-                strengthsList = skillSet,
-                onSkillRemove = onSkillRemove
+                onBrowserSkillClick = onStrengthBrowserSkillClick,
+                strengthsList = strengthSkillSet,
+                onSkillRemove = onStrengthSkillRemove
             )
 
             /* SPACER */
@@ -131,7 +133,7 @@ fun StrengthsAndWeaknessesScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            StrengthsListInterface(
+            SkillsListInterface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
@@ -139,9 +141,9 @@ fun StrengthsAndWeaknessesScreen(
                         shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
                     )
                     .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)),
-                onBrowserSkillClick = onBrowserSkillClick,
-                strengthsList = skillSet,
-                onSkillRemove = onSkillRemove
+                onBrowserSkillClick = onWeaknessBrowserSkillClick,
+                strengthsList = weaknessSkillSet,
+                onSkillRemove = onWeaknessSkillRemove
             )
 
             /* SPACER */
@@ -153,7 +155,7 @@ fun StrengthsAndWeaknessesScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun StrengthsListInterface(
+fun SkillsListInterface(
     onBrowserSkillClick: () -> Unit,
     modifier: Modifier = Modifier,
     strengthsList: List<Skill>,

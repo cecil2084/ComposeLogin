@@ -49,7 +49,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -94,8 +93,10 @@ fun SetUpProfileScreenPart2(
     val uiState by viewModel.uiState.collectAsState()
     val searchQueryState by viewModel.searchQueryState.collectAsState()
     var showStrengthBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
+    val strengthSheetState = rememberModalBottomSheetState()
+    var showWeaknessBottomSheet by remember { mutableStateOf(false) }
+    val weaknessSheetState = rememberModalBottomSheetState()
+
     Scaffold(
         modifier = modifier
             .background(LocalStuddyColors.current.primary700)
@@ -153,18 +154,17 @@ fun SetUpProfileScreenPart2(
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
                 StrengthsAndWeaknessesScreen(
-                    onBrowserSkillClick = { showStrengthBottomSheet = !showStrengthBottomSheet },
-                    skillSet = uiState.strengths,
+                    strengthSkillSet = uiState.strengths,
+                    weaknessSkillSet = uiState.weaknesses,
                     modifier = Modifier.padding(
                         start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
                         top = innerPadding.calculateTopPadding(),
                         end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
                     ),
-                    onConfirmClick = {
-                        navController.navigate(SetUpNavRoutes.PREFERRED_STUDY_TIME)
-                        viewModel.nextPage()
-                    },
-                    onSkillRemove = { viewModel.removeSkill(it) }
+                    onStrengthBrowserSkillClick = { showStrengthBottomSheet = !showStrengthBottomSheet },
+                    onWeaknessBrowserSkillClick = { showWeaknessBottomSheet != showWeaknessBottomSheet },
+                    onWeaknessSkillRemove = { viewModel.removeWeaknessSkill(it) },
+                    onStrengthSkillRemove = { viewModel.removeStrengthSkill(it) }
                 )
 
                 if (showStrengthBottomSheet) {
@@ -174,22 +174,48 @@ fun SetUpProfileScreenPart2(
                         onDismissRequest = {
                             showStrengthBottomSheet = false
                         },
-                        sheetState = sheetState
+                        sheetState = strengthSheetState
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(20.dp)
                         ) {
-                            ModalStrengthsListInterface(
+                            ModalSkillsListInterface(
                                 searchQuery = searchQueryState,
                                 onSearchChange = {
                                     viewModel.onSearchQueryChanged(it)
                                 },
                                 skillListState = viewModel.skillListState,
-                                onSkillSelect = { viewModel.addSkill(it) },
-                                onSkillRemove = { viewModel.removeSkill(it) },
-                                strengthsList = uiState.strengths
+                                onSkillSelect = { viewModel.addStrengthSkill(it) },
+                                onSkillRemove = { viewModel.removeStrengthSkill(it) },
+                                skillsList = uiState.strengths
+                            )
+                        }
+                    }
+                } else if (showWeaknessBottomSheet) {
+                    ModalBottomSheet(
+                        containerColor = Color.White,
+                        modifier = Modifier.fillMaxSize(),
+                        onDismissRequest = {
+                            showWeaknessBottomSheet = false
+                        },
+                        sheetState = weaknessSheetState
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp)
+                        ) {
+                            ModalSkillsListInterface(
+                                searchQuery = searchQueryState,
+                                onSearchChange = {
+                                    viewModel.onSearchQueryChanged(it)
+                                },
+                                skillListState = viewModel.skillListState,
+                                onSkillSelect = { viewModel.addWeaknessSkill(it) },
+                                onSkillRemove = { viewModel.removeWeaknessSkill(it) },
+                                skillsList = uiState.weaknesses
                             )
                         }
                     }
@@ -237,14 +263,14 @@ fun SetUpProfileScreenPart2(
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
-fun ModalStrengthsListInterface(
+fun ModalSkillsListInterface(
     searchQuery: String,
     onSearchChange: (String) -> Unit,
     onSkillSelect: (Skill) -> Unit,
     onSkillRemove: (Skill) -> Unit,
     skillListState: SkillListState,
     modifier: Modifier = Modifier,
-    strengthsList: List<Skill>,
+    skillsList: List<Skill>,
 ) {
     Column(modifier = modifier) {
         Column(
@@ -263,7 +289,7 @@ fun ModalStrengthsListInterface(
                 verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),
                 horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
             ) {
-                strengthsList.forEach {
+                skillsList.forEach {
                     SkillPillRemovableBlue(skill = it, onSkillRemove = onSkillRemove)
                 }
             }

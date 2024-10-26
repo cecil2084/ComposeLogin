@@ -11,6 +11,7 @@ import com.example.composelogin.model.SkillListState
 import com.example.composelogin.ui.Exceptions.ListLoadingInProgressException
 import com.example.composelogin.ui.Exceptions.ListNotLoadedException
 import com.example.composelogin.ui.states.SetUpProfileState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,7 +56,7 @@ class SetUpViewModel : ViewModel() {
     }
 
     fun fetchSkills() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             skillListState = SkillListState.Loading
             delay(2000L)
             skillListState = try {
@@ -66,7 +67,7 @@ class SetUpViewModel : ViewModel() {
         }
     }
 
-    fun removeSkill(skill: Skill) {
+    fun removeStrengthSkill(skill: Skill) {
         _uiState.update { currentState ->
             currentState.copy(
                 strengths = currentState.strengths.filter {
@@ -76,11 +77,31 @@ class SetUpViewModel : ViewModel() {
         }
     }
 
-    fun addSkill(skill: Skill) {
+    fun addStrengthSkill(skill: Skill) {
         if (!_uiState.value.strengths.any { it.id == skill.id }) {
             _uiState.update { currentState ->
                 currentState.copy(
                     strengths = currentState.strengths + listOf(skill)
+                )
+            }
+        }
+    }
+
+    fun removeWeaknessSkill(skill: Skill) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                weaknesses = currentState.weaknesses.filter {
+                    it.id != skill.id
+                }
+            )
+        }
+    }
+
+    fun addWeaknessSkill(skill: Skill) {
+        if (!_uiState.value.weaknesses.any { it.id == skill.id }) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    weaknesses = currentState.weaknesses + listOf(skill)
                 )
             }
         }
