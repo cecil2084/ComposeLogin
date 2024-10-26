@@ -2,9 +2,7 @@ package com.example.composelogin.ui.screens.authscreen.account_setup
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -12,7 +10,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.composelogin.AuthNavRoutes
-import com.example.composelogin.MainNavRoutes
 import com.example.composelogin.R
 import com.example.composelogin.model.TOTAL_PAGE
 import com.example.composelogin.ui.enums.PageDirection
@@ -61,6 +58,7 @@ fun SetUpProfileScreenPart2(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val pageDirectionState by viewModel.pageDirectionState.collectAsState()
+
     Scaffold(
         modifier = modifier
             .background(LocalStuddyColors.current.primary700)
@@ -95,12 +93,16 @@ fun SetUpProfileScreenPart2(
                     )
                 }
             }, label = ""
-        ) {
-            when (it) {
+        ) { page ->
+            when (page) {
                 1 -> StrengthsScreen(
+                    skillListState = viewModel.skillListState,
                     skillSet = uiState.strengths,
                     modifier = Modifier.padding(innerPadding),
-                    onConfirmClick = { viewModel.nextPage() })
+                    onConfirmClick = { viewModel.nextPage() },
+                    onSkillSelect = { viewModel.addSkill(it) },
+                    onSkillRemove = { viewModel.removeSkill(it) }
+                    )
 
                 2 -> WeaknessesScreen(
                     modifier = Modifier.padding(innerPadding),

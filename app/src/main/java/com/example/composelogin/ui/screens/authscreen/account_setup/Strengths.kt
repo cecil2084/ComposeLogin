@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.example.composelogin.R
 import com.example.composelogin.data.skillsList
 import com.example.composelogin.model.Skill
+import com.example.composelogin.model.SkillListState
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
 import com.example.composelogin.ui.theme.LocalStuddyColors
@@ -51,9 +53,12 @@ import com.example.composelogin.ui.theme.fredokaFamily
 
 @Composable
 fun StrengthsScreen(
+    skillListState: SkillListState,
     skillSet: List<Skill>,
     modifier: Modifier = Modifier,
-    onConfirmClick: () -> Unit
+    onSkillSelect: (Skill) -> Unit,
+    onSkillRemove: (Skill) -> Unit,
+    onConfirmClick: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,21 +91,12 @@ fun StrengthsScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-//            StrengthsListInterface(strengthsList = skillSet)
-            StrengthsListInterface(strengthsList = listOf(
-                Skill(1, "Public Speaking"),
-                Skill(2, "Time Management"),
-                Skill(3, "Problem Solving"),
-                Skill(4, "Project Management"),
-                Skill(5, "Teamwork"),
-                Skill(6, "Creativity"),
-                Skill(7, "Emotional Intelligence"),
-                Skill(8, "Adaptability"),
-                Skill(9, "Critical Thinking"),
-                Skill(10, "Leadership"),
-                Skill(11, "Customer Service"),
-                Skill(12, "Negotiation")
-            ))
+            StrengthsListInterface(
+                skillListState = skillListState,
+                strengthsList = skillSet,
+                onSkillSelect = onSkillSelect,
+                onSkillRemove = onSkillRemove
+            )
 
         }
         StuddyButtonWhite(
@@ -113,8 +109,12 @@ fun StrengthsScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun StrengthsListInterface(
+    skillListState: SkillListState,
     modifier: Modifier = Modifier,
-    strengthsList: List<Skill>
+    strengthsList: List<Skill>,
+    onSkillSelect: (Skill) -> Unit,
+    onSkillRemove: (Skill) -> Unit
+
 ) {
     Column(
         modifier = modifier
@@ -124,6 +124,7 @@ fun StrengthsListInterface(
                 BorderStroke(1.dp, Color.White),
                 shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
             )
+            .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall))
     ) {
         FlowRow(
             modifier = Modifier.padding(StuddyDimensions.skillListInterfacePadding),
@@ -131,11 +132,11 @@ fun StrengthsListInterface(
             verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
         ) {
             strengthsList.forEach {
-                SkillPillRemovable(skill = it, onSkillRemove = {})
+                SkillPillRemovable(skill = it, onSkillRemove = onSkillRemove)
             }
         }
 
-        SuggestionTextField(skillsList)
+        SuggestionTextField(skillListState = skillListState, onSkillSelect = onSkillSelect)
     }
 }
 
@@ -143,7 +144,7 @@ fun StrengthsListInterface(
 fun SkillPillRemovable(
     modifier: Modifier = Modifier,
     skill: Skill,
-    onSkillRemove: () -> Unit
+    onSkillRemove: (Skill) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -167,8 +168,8 @@ fun SkillPillRemovable(
         Spacer(modifier = Modifier.width(5.dp))
 
         IconButton(
-            modifier= Modifier.size(12.dp),
-            onClick = onSkillRemove
+            modifier = Modifier.size(12.dp),
+            onClick = { onSkillRemove(skill) }
         ) {
             Icon(
                 modifier = Modifier.size(20.dp),
@@ -183,38 +184,42 @@ fun SkillPillRemovable(
 
 @Composable
 fun SuggestionTextField(
-    possibleInputs: List<Skill>
+    skillListState: SkillListState,
+    onSkillSelect: (Skill) -> Unit
 ) {
-    // State to hold the current text input and suggestions
+    val possibleInputs = when(skillListState) {
+        is SkillListState.Loading -> listOf<Skill>(Skill(1, "LOADING"))
+        is SkillListState.Success -> skillListState.skillList
+        is SkillListState.Error -> listOf<Skill>(Skill(1, "ERROR"))
+    }
+
     var text by remember { mutableStateOf("") }
     val suggestions = remember(text) {
-        // Filter the suggestions based on the current input
         possibleInputs.filter { it.name.contains(text, ignoreCase = true) }
     }
 
     Column {
-        // TextField for user input
         TextField(
             value = text,
             onValueChange = { newText ->
-                text = newText // Update the text input state
+                text = newText
             },
-            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth(),
             placeholder = { Text("Type something...") }
         )
 
-        // Show suggestions if there are any
         if (suggestions.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(Color.White) // Background for suggestions
+                    .heightIn(max = 200.dp)
+                    .background(Color.White)
             ) {
                 items(suggestions) { suggestion ->
-                    // Suggestion item
                     SuggestionItem(suggestion.name) {
-                        text = suggestion.name // Update text when suggestion is clicked
+                        onSkillSelect(suggestion)
                     }
                 }
             }
@@ -228,8 +233,8 @@ fun SuggestionItem(suggestion: String, onClick: () -> Unit) {
         text = suggestion,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() } // Handle item click
-            .padding(8.dp) // Padding for suggestion item
+            .clickable { onClick() }
+            .padding(8.dp)
     )
 }
 

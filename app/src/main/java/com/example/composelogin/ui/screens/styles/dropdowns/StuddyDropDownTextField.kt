@@ -39,7 +39,7 @@ import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.theme.quicksandFamily
 
 @Composable
-private fun StuddyDropDownTextField(
+fun StuddyDropDownTextField(
     isFocused: Boolean,
     value: String,
     onClick: () -> Unit,
@@ -186,6 +186,5 @@ fun StuddyDropDownMenu(
                 }
             }
         }
-
     }
 }
