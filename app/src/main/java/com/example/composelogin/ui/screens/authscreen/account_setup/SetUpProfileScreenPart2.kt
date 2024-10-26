@@ -45,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,8 +93,10 @@ fun SetUpProfileScreenPart2(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQueryState by viewModel.searchQueryState.collectAsState()
+
     var showStrengthBottomSheet by remember { mutableStateOf(false) }
     val strengthSheetState = rememberModalBottomSheetState()
+
     var showWeaknessBottomSheet by remember { mutableStateOf(false) }
     val weaknessSheetState = rememberModalBottomSheetState()
 
@@ -162,10 +165,11 @@ fun SetUpProfileScreenPart2(
                         end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
                     ),
                     onStrengthBrowserSkillClick = { showStrengthBottomSheet = !showStrengthBottomSheet },
-                    onWeaknessBrowserSkillClick = { showWeaknessBottomSheet != showWeaknessBottomSheet },
+                    onWeaknessBrowserSkillClick = { showWeaknessBottomSheet = !showWeaknessBottomSheet },
                     onWeaknessSkillRemove = { viewModel.removeWeaknessSkill(it) },
                     onStrengthSkillRemove = { viewModel.removeStrengthSkill(it) }
                 )
+
 
                 if (showStrengthBottomSheet) {
                     ModalBottomSheet(
@@ -193,7 +197,8 @@ fun SetUpProfileScreenPart2(
                             )
                         }
                     }
-                } else if (showWeaknessBottomSheet) {
+                }
+                if (showWeaknessBottomSheet) {
                     ModalBottomSheet(
                         containerColor = Color.White,
                         modifier = Modifier.fillMaxSize(),

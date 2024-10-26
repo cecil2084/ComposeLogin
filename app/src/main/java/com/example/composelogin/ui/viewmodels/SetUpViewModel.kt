@@ -55,8 +55,8 @@ class SetUpViewModel : ViewModel() {
         fetchSkills()
     }
 
-    fun fetchSkills() {
-        viewModelScope.launch(Dispatchers.IO) {
+    private fun fetchSkills() {
+        viewModelScope.launch(Dispatchers.Main) {
             skillListState = SkillListState.Loading
             delay(2000L)
             skillListState = try {
@@ -68,41 +68,49 @@ class SetUpViewModel : ViewModel() {
     }
 
     fun removeStrengthSkill(skill: Skill) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                strengths = currentState.strengths.filter {
-                    it.id != skill.id
-                }
-            )
-        }
-    }
-
-    fun addStrengthSkill(skill: Skill) {
-        if (!_uiState.value.strengths.any { it.id == skill.id }) {
+        viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
-                    strengths = currentState.strengths + listOf(skill)
+                    strengths = currentState.strengths.filter {
+                        it.id != skill.id
+                    }
                 )
             }
         }
     }
 
-    fun removeWeaknessSkill(skill: Skill) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                weaknesses = currentState.weaknesses.filter {
-                    it.id != skill.id
+    fun addStrengthSkill(skill: Skill) {
+        viewModelScope.launch {
+            if (!_uiState.value.strengths.any { it.id == skill.id }) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        strengths = currentState.strengths + listOf(skill)
+                    )
                 }
-            )
+            }
+        }
+    }
+
+    fun removeWeaknessSkill(skill: Skill) {
+        viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    weaknesses = currentState.weaknesses.filter {
+                        it.id != skill.id
+                    }
+                )
+            }
         }
     }
 
     fun addWeaknessSkill(skill: Skill) {
-        if (!_uiState.value.weaknesses.any { it.id == skill.id }) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    weaknesses = currentState.weaknesses + listOf(skill)
-                )
+        viewModelScope.launch {
+            if (!_uiState.value.weaknesses.any { it.id == skill.id }) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        weaknesses = currentState.weaknesses + listOf(skill)
+                    )
+                }
             }
         }
     }
