@@ -41,8 +41,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.example.composelogin.AuthNavRoutes
 import com.example.composelogin.R
+import com.example.composelogin.SetUpNavRoutes
 import com.example.composelogin.model.TOTAL_PAGE
 import com.example.composelogin.ui.enums.PageDirection
 import com.example.composelogin.ui.theme.LocalStuddyColors
@@ -53,6 +56,7 @@ import com.example.composelogin.ui.viewmodels.SetUpViewModel
 fun SetUpProfileScreenPart2(
     modifier: Modifier = Modifier,
     viewModel: SetUpViewModel = viewModel(),
+    onCancelLastClick: () -> Unit,
     onConfirmLastClick: () -> Unit,
     navController: NavHostController
 ) {
@@ -70,58 +74,148 @@ fun SetUpProfileScreenPart2(
                 progressRatio = uiState.currentPage / TOTAL_PAGE.toFloat(),
                 onBackClick = {
                     if (uiState.currentPage != 1) {
+                        navController.popBackStack()
                         viewModel.previousPage()
                     } else {
-                        navController.navigate(AuthNavRoutes.SIGNUP)
+                        onCancelLastClick()
                     }
                 }
             )
         }
     ) { innerPadding ->
 
-        AnimatedContent(
+        NavHost(
             modifier = Modifier.background(LocalStuddyColors.current.primary700),
-            targetState = uiState.currentPage,
-            transitionSpec = {
-                if (pageDirectionState.equals(PageDirection.FORWARD)) {
-                    (slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) + fadeIn()).togetherWith(
-                        slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth }) + fadeOut()
-                    )
-                } else {
-                    (slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) + fadeIn()).togetherWith(
-                        slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
-                    )
-                }
-            }, label = ""
-        ) { page ->
-            when (page) {
-                1 -> StrengthsScreen(
+            navController = navController,
+            startDestination = SetUpNavRoutes.STRENGTHS,
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+        ) {
+            composable(
+                route = SetUpNavRoutes.STRENGTHS,
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+            ) {
+                StrengthsScreen(
                     skillListState = viewModel.skillListState,
                     skillSet = uiState.strengths,
                     modifier = Modifier.padding(innerPadding),
-                    onConfirmClick = { viewModel.nextPage() },
+                    onConfirmClick = {
+                        navController.navigate(SetUpNavRoutes.WEAKNESSES)
+                        viewModel.nextPage()
+                    },
                     onSkillSelect = { viewModel.addSkill(it) },
                     onSkillRemove = { viewModel.removeSkill(it) }
-                    )
-
-                2 -> WeaknessesScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onConfirmClick = { viewModel.nextPage() })
-
-                3 -> PreferredStudyTimeScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onConfirmClick = { viewModel.nextPage() })
-
-                4 -> PreferredStudyFrequency(
-                    modifier = Modifier.padding(innerPadding),
-                    onConfirmClick = { viewModel.nextPage() }
                 )
+            }
 
-                5 -> PreferredTraits(
+            composable(
+                route = SetUpNavRoutes.WEAKNESSES,
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+            ) {
+                WeaknessesScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    onConfirmClick = {
+                        navController.navigate(SetUpNavRoutes.PREFERRED_STUDY_TIME)
+                        viewModel.nextPage()
+                    }
+                )
+            }
+
+            composable(
+                route = SetUpNavRoutes.PREFERRED_STUDY_TIME,
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                ) {
+                PreferredStudyTimeScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    onConfirmClick = {
+                        navController.navigate((SetUpNavRoutes.PREFERRED_FREQUENCY))
+                        viewModel.nextPage()
+                    })
+            }
+
+            composable(
+                route = SetUpNavRoutes.PREFERRED_FREQUENCY,
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                ) {
+                PreferredStudyFrequency(
+                    modifier = Modifier.padding(innerPadding),
+                    onConfirmClick = {
+                        navController.navigate(SetUpNavRoutes.PREFERRED_TRAITS)
+                        viewModel.nextPage()
+                    }
+                )
+            }
+
+            composable(
+                route = SetUpNavRoutes.PREFERRED_TRAITS,
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                ) {
+                PreferredTraits(
                     modifier = Modifier.padding(innerPadding),
                     onConfirmClick = onConfirmLastClick,
-                    )
+                )
             }
+
+//        AnimatedContent(
+//            modifier = Modifier.background(LocalStuddyColors.current.primary700),
+//            targetState = uiState.currentPage,
+//            transitionSpec = {
+//                if (pageDirectionState.equals(PageDirection.FORWARD)) {
+//                    (slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) + fadeIn()).togetherWith(
+//                        slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth }) + fadeOut()
+//                    )
+//                } else {
+//                    (slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) + fadeIn()).togetherWith(
+//                        slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
+//                    )
+//                }
+//            }, label = ""
+//        ) { page ->
+//            when (page) {
+//                1 -> StrengthsScreen(
+//                    skillListState = viewModel.skillListState,
+//                    skillSet = uiState.strengths,
+//                    modifier = Modifier.padding(innerPadding),
+//                    onConfirmClick = { viewModel.nextPage() },
+//                    onSkillSelect = { viewModel.addSkill(it) },
+//                    onSkillRemove = { viewModel.removeSkill(it) }
+//                    )
+//
+//                2 -> WeaknessesScreen(
+//                    modifier = Modifier.padding(innerPadding),
+//                    onConfirmClick = { viewModel.nextPage() })
+//
+//                3 -> PreferredStudyTimeScreen(
+//                    modifier = Modifier.padding(innerPadding),
+//                    onConfirmClick = { viewModel.nextPage() })
+//
+//                4 -> PreferredStudyFrequency(
+//                    modifier = Modifier.padding(innerPadding),
+//                    onConfirmClick = { viewModel.nextPage() }
+//                )
+//
+//                5 -> PreferredTraits(
+//                    modifier = Modifier.padding(innerPadding),
+//                    onConfirmClick = onConfirmLastClick,
+//                    )
+//            }
         }
     }
 }

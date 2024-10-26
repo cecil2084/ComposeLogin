@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,9 +30,22 @@ class MainActivity : ComponentActivity() {
             ComposeLoginTheme {
 
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = AuthNavRoutes.AUTH) {
+                NavHost(
+                    navController = navController,
+                    startDestination = AuthNavRoutes.AUTH,
+                    enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                    exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                    popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                    popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                ) {
                     navigation(route = AuthNavRoutes.AUTH, startDestination = AuthNavRoutes.SIGNUP) {
-                        composable(route = AuthNavRoutes.SIGNUP) {
+                        composable(
+                            route = AuthNavRoutes.SIGNUP,
+                            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                        ) {
                             val viewModel: SignUpViewModel = viewModel()
                             val uiState by viewModel.signUpState.collectAsState()
                             MainSignUpScreen(
@@ -45,7 +60,13 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable(route = AuthNavRoutes.LOGIN) {
+                        composable(
+                            route = AuthNavRoutes.LOGIN,
+                            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                        ) {
                             val viewModel: LoginViewModel = viewModel()
                             val uiState by viewModel.loginState.collectAsState()
                             MainLoginScreen(
@@ -59,27 +80,44 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable(route = AuthNavRoutes.SETUP_PROFILE) {
+                        composable(
+                            route = AuthNavRoutes.SETUP_PROFILE,
+                            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                            ) {
                             MainProfileDetailsSetUp(
                                 onSignUpClick = { navController.navigate(AuthNavRoutes.SIGNUP) },
                                 onConfirmClick = {
-                                    navController.navigate(SetUpNavRoutes.SETUP_PROFILE_PART2) {
-                                        popUpTo(navController.graph.startDestinationId)
-                                        launchSingleTop = true
-                                    }
+                                    navController.navigate(SetUpNavRoutes.SETUP_PROFILE_PART2)
                                 }
                             )
                         }
 
-                        composable(route = SetUpNavRoutes.SETUP_PROFILE_PART2) {
+                        composable(
+                            route = SetUpNavRoutes.SETUP_PROFILE_PART2,
+                            enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                            exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                            popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                            popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                            ) {
+                            val setUpNavController = rememberNavController()
                             SetUpProfileScreenPart2(
+                                onCancelLastClick = {navController.popBackStack()},
                                 onConfirmLastClick = {navController.navigate(MainNavRoutes.MAIN)},
-                                navController = navController
+                                navController = setUpNavController
                             )
                         }
                     }
 
-                    composable(route = MainNavRoutes.MAIN) {
+                    composable(
+                        route = MainNavRoutes.MAIN,
+                        enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                        exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                        popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                        popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+                    ) {
                         val homeNavController = rememberNavController()
                         MainScreenApp(
                             navController = homeNavController,
