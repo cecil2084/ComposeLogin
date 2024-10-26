@@ -1,56 +1,95 @@
 package com.example.composelogin.ui.screens.authscreen.account_setup
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.composelogin.AuthNavRoutes
 import com.example.composelogin.R
 import com.example.composelogin.SetUpNavRoutes
+import com.example.composelogin.model.Skill
+import com.example.composelogin.model.SkillListState
 import com.example.composelogin.model.TOTAL_PAGE
-import com.example.composelogin.ui.enums.PageDirection
+import com.example.composelogin.ui.Exceptions.ListNotLoadedException
+import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
+import com.example.composelogin.ui.screens.styles.textfields.StuddyPasswordVisualTransformation
 import com.example.composelogin.ui.theme.LocalStuddyColors
+import com.example.composelogin.ui.theme.StuddyTypography
+import com.example.composelogin.ui.theme.quicksandFamily
 import com.example.composelogin.ui.viewmodels.SetUpViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SetUpProfileScreenPart2(
@@ -61,8 +100,10 @@ fun SetUpProfileScreenPart2(
     navController: NavHostController
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val pageDirectionState by viewModel.pageDirectionState.collectAsState()
-
+    val searchQueryState by viewModel.searchQueryState.collectAsState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     Scaffold(
         modifier = modifier
             .background(LocalStuddyColors.current.primary700)
@@ -70,7 +111,9 @@ fun SetUpProfileScreenPart2(
             .navigationBarsPadding(),
         topBar = {
             ProgressBar(
-                modifier = Modifier.background(LocalStuddyColors.current.primary700),
+                modifier = Modifier
+                    .background(LocalStuddyColors.current.primary700)
+                    .zIndex(9f),
                 progressRatio = uiState.currentPage / TOTAL_PAGE.toFloat(),
                 onBackClick = {
                     if (uiState.currentPage != 1) {
@@ -83,7 +126,6 @@ fun SetUpProfileScreenPart2(
             )
         }
     ) { innerPadding ->
-
         NavHost(
             modifier = Modifier.background(LocalStuddyColors.current.primary700),
             navController = navController,
@@ -101,16 +143,44 @@ fun SetUpProfileScreenPart2(
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
                 StrengthsScreen(
-                    skillListState = viewModel.skillListState,
+                    onBrowserSkillClick = { showBottomSheet = !showBottomSheet },
                     skillSet = uiState.strengths,
                     modifier = Modifier.padding(innerPadding),
                     onConfirmClick = {
                         navController.navigate(SetUpNavRoutes.WEAKNESSES)
                         viewModel.nextPage()
                     },
-                    onSkillSelect = { viewModel.addSkill(it) },
                     onSkillRemove = { viewModel.removeSkill(it) }
                 )
+
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        containerColor = Color.White,
+                        modifier = Modifier.fillMaxSize(),
+                        onDismissRequest = {
+                            showBottomSheet = false
+                        },
+                        sheetState = sheetState
+                    ) {
+                        Column(
+                            modifier = Modifier
+//                                .verticalScroll(rememberScrollState())
+                                .fillMaxWidth()
+                                .padding(20.dp)
+                        ) {
+                            ModalStrengthsListInterface(
+                                searchQuery = searchQueryState,
+                                onSearchChange = {
+                                    viewModel.onSearchQueryChanged(it)
+                                                 },
+                                skillListState = viewModel.skillListState,
+                                onSkillSelect = {viewModel.addSkill(it)},
+                                onSkillRemove = { viewModel.removeSkill(it)},
+                                strengthsList = uiState.strengths
+                            )
+                        }
+                    }
+                }
             }
 
             composable(
@@ -135,7 +205,7 @@ fun SetUpProfileScreenPart2(
                 exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
-                ) {
+            ) {
                 PreferredStudyTimeScreen(
                     modifier = Modifier.padding(innerPadding),
                     onConfirmClick = {
@@ -150,7 +220,7 @@ fun SetUpProfileScreenPart2(
                 exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
-                ) {
+            ) {
                 PreferredStudyFrequency(
                     modifier = Modifier.padding(innerPadding),
                     onConfirmClick = {
@@ -166,56 +236,190 @@ fun SetUpProfileScreenPart2(
                 exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
-                ) {
+            ) {
                 PreferredTraits(
                     modifier = Modifier.padding(innerPadding),
                     onConfirmClick = onConfirmLastClick,
                 )
             }
+        }
+    }
+}
 
-//        AnimatedContent(
-//            modifier = Modifier.background(LocalStuddyColors.current.primary700),
-//            targetState = uiState.currentPage,
-//            transitionSpec = {
-//                if (pageDirectionState.equals(PageDirection.FORWARD)) {
-//                    (slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) + fadeIn()).togetherWith(
-//                        slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth }) + fadeOut()
+@Composable
+@OptIn(ExperimentalLayoutApi::class)
+fun ModalStrengthsListInterface(
+    searchQuery: String,
+    onSearchChange: (String) -> Unit,
+    onSkillSelect: (Skill) -> Unit,
+    onSkillRemove: (Skill) -> Unit,
+    skillListState: SkillListState,
+    modifier: Modifier = Modifier,
+    strengthsList: List<Skill>,
+
+) {
+    Column(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .border(
+                    BorderStroke(1.dp, LocalStuddyColors.current.primary900),
+                    shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
+                )
+                .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)),
+        ) {
+            FlowRow(
+                modifier = Modifier
+                    .heightIn(min = 100.dp)
+                    .padding(StuddyDimensions.skillListInterfacePadding),
+                verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),
+                horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
+            ) {
+                strengthsList.forEach {
+                    SkillPillRemovableBlue(skill = it, onSkillRemove = onSkillRemove)
+                }
+            }
+
+            HorizontalDivider(
+                color = LocalStuddyColors.current.primary900,
+                thickness = 1.dp
+            )
+
+//            BasicTextField(
+//                text = "Search Skills",
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(10.dp)
+//                    .clickable {
+//                    },
+//                style = StuddyTypography.pXS,
+//                color = LocalStuddyColors.current.primary900
+//            )
+
+            BasicTextField(
+                cursorBrush = SolidColor(Color.White),
+                value = searchQuery,
+                onValueChange = onSearchChange,
+                textStyle = StuddyTypography.pXS,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .clickable {
+                    },
+                decorationBox = { innerTextField ->
+                    if (searchQuery.isEmpty()) {
+                        Text(
+                            text = "Search Skills",
+                            style = StuddyTypography.pXS,
+                            color = LocalStuddyColors.current.primary900
+                        )
+                    }
+                    innerTextField()
+                },
+                singleLine = true,
+            )
+        }
+        when(skillListState){
+            is SkillListState.Success -> LazySkillsColumn(
+                onSkillSelect = onSkillSelect,
+                skillList = skillListState.skillList
+            )
+            is SkillListState.Loading -> Text("LOADING...")
+            is SkillListState.Error -> Text("ERROR LOADING SKILLS :(")
+        }
+    }
+}
+
+@Composable
+fun LazySkillsColumn(
+    onSkillSelect: (Skill) -> Unit,
+    skillList: List<Skill>
+){
+    Box(
+        modifier = Modifier.padding(top = 20.dp)
+    ){
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color.White, Color.Transparent)
+                    )
+                )
+                .zIndex(10f)
+        )
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ){
+            items(skillList){ skill ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onSkillSelect(skill)
+                        }
+                        .padding(vertical = 15.dp)
+                ){
+//                    HorizontalDivider(
+//                        color = LocalStuddyColors.current.primary900,
+//                        thickness = 1.dp
 //                    )
-//                } else {
-//                    (slideInHorizontally(initialOffsetX = { fullWidth -> -fullWidth }) + fadeIn()).togetherWith(
-//                        slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
-//                    )
-//                }
-//            }, label = ""
-//        ) { page ->
-//            when (page) {
-//                1 -> StrengthsScreen(
-//                    skillListState = viewModel.skillListState,
-//                    skillSet = uiState.strengths,
-//                    modifier = Modifier.padding(innerPadding),
-//                    onConfirmClick = { viewModel.nextPage() },
-//                    onSkillSelect = { viewModel.addSkill(it) },
-//                    onSkillRemove = { viewModel.removeSkill(it) }
-//                    )
-//
-//                2 -> WeaknessesScreen(
-//                    modifier = Modifier.padding(innerPadding),
-//                    onConfirmClick = { viewModel.nextPage() })
-//
-//                3 -> PreferredStudyTimeScreen(
-//                    modifier = Modifier.padding(innerPadding),
-//                    onConfirmClick = { viewModel.nextPage() })
-//
-//                4 -> PreferredStudyFrequency(
-//                    modifier = Modifier.padding(innerPadding),
-//                    onConfirmClick = { viewModel.nextPage() }
-//                )
-//
-//                5 -> PreferredTraits(
-//                    modifier = Modifier.padding(innerPadding),
-//                    onConfirmClick = onConfirmLastClick,
-//                    )
-//            }
+
+                    Image(
+                        painter = painterResource(id = R.drawable.book),
+                        contentDescription = "logo"
+                    )
+
+                    Spacer(modifier = Modifier.width(20.dp))
+
+                    Text(
+                        text = skill.name,
+                        style = StuddyTypography.pXS,
+                        color = LocalStuddyColors.current.primary900
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SkillPillRemovableBlue(
+    modifier: Modifier = Modifier,
+    skill: Skill,
+    onSkillRemove: (Skill) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier
+            .border(
+                BorderStroke(1.dp, LocalStuddyColors.current.primary700),
+                shape = RoundedCornerShape(StuddyDimensions.buttonBorderRadius)
+            )
+            .padding(
+                vertical = StuddyDimensions.pillTextPadding,
+                horizontal = StuddyDimensions.pillTextPadding
+            )
+    ) {
+        Text(
+            text = skill.name,
+            color = LocalStuddyColors.current.primary700,
+            style = StuddyTypography.pXSSmaller
+        )
+
+        Spacer(modifier = Modifier.width(5.dp))
+
+        IconButton(
+            modifier = Modifier.size(12.dp),
+            onClick = { onSkillRemove(skill) }
+        ) {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                imageVector = ImageVector.vectorResource(id = R.drawable.x_circle),
+                contentDescription = "remove ${skill.name}",
+                tint = LocalStuddyColors.current.primary700
+            )
         }
     }
 }

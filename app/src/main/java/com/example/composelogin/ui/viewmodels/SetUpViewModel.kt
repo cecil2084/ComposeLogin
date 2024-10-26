@@ -8,7 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.composelogin.data.skillsList
 import com.example.composelogin.model.Skill
 import com.example.composelogin.model.SkillListState
-import com.example.composelogin.ui.enums.PageDirection
+import com.example.composelogin.ui.Exceptions.ListLoadingInProgressException
+import com.example.composelogin.ui.Exceptions.ListNotLoadedException
 import com.example.composelogin.ui.states.SetUpProfileState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,15 +23,18 @@ class SetUpViewModel : ViewModel() {
         MutableStateFlow(SetUpProfileState())
     val uiState: StateFlow<SetUpProfileState> = _uiState.asStateFlow()
 
+    private val _searchQueryState: MutableStateFlow<String> =
+        MutableStateFlow("")
+    val searchQueryState: StateFlow<String> = _searchQueryState.asStateFlow()
+
     var skillListState: SkillListState by mutableStateOf(SkillListState.Loading)
         private set
 
-    private val _pageDirectionState: MutableStateFlow<PageDirection> =
-        MutableStateFlow(PageDirection.FORWARD)
-    val pageDirectionState: StateFlow<PageDirection> = _pageDirectionState.asStateFlow()
+    fun onSearchQueryChanged(updatedText: String){
+        _searchQueryState.value = updatedText
+    }
 
     fun nextPage() {
-        _pageDirectionState.value = PageDirection.FORWARD
         _uiState.update { currentState ->
             currentState.copy(
                 currentPage = currentState.currentPage + 1
@@ -39,7 +43,6 @@ class SetUpViewModel : ViewModel() {
     }
 
     fun previousPage() {
-        _pageDirectionState.value = PageDirection.BACKWARD
         _uiState.update { currentState ->
             currentState.copy(
                 currentPage = currentState.currentPage - 1
@@ -80,6 +83,20 @@ class SetUpViewModel : ViewModel() {
                     strengths = currentState.strengths + listOf(skill)
                 )
             }
+        }
+    }
+
+    fun filterSuggestion(searchQuery: String): List<Skill> {
+        return when (skillListState) {
+            is SkillListState.Success ->
+                (skillListState as SkillListState.Success).skillList.filter {
+                    it.name.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
+                }
+            is SkillListState.Loading -> throw ListLoadingInProgressException("di pa tapos mag load eh")
+            is SkillListState.Error -> throw ListNotLoadedException("awww di nag load :(")
         }
     }
 }

@@ -16,6 +16,7 @@ object SetUpNavRoutes {
     const val PREFERRED_STUDY_TIME: String = "preferred_study_time"
     const val PREFERRED_FREQUENCY: String = "preferred_frequency"
     const val PREFERRED_TRAITS: String = "preferred_traits"
+    const val BROWSE_SKILLS: String = "browse_skills"
 }
 
 object MainNavRoutes {

@@ -19,9 +19,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -36,9 +39,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.composelogin.R
@@ -53,10 +58,9 @@ import com.example.composelogin.ui.theme.fredokaFamily
 
 @Composable
 fun StrengthsScreen(
-    skillListState: SkillListState,
+    onBrowserSkillClick: () -> Unit,
     skillSet: List<Skill>,
     modifier: Modifier = Modifier,
-    onSkillSelect: (Skill) -> Unit,
     onSkillRemove: (Skill) -> Unit,
     onConfirmClick: () -> Unit,
 ) {
@@ -92,13 +96,20 @@ fun StrengthsScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             StrengthsListInterface(
-                skillListState = skillListState,
+                modifier = Modifier
+                    .fillMaxWidth()
+//            .heightIn(min = 300.dp)
+                    .border(
+                        BorderStroke(1.dp, Color.White),
+                        shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
+                    )
+                    .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)),
+                onBrowserSkillClick = onBrowserSkillClick,
                 strengthsList = skillSet,
-                onSkillSelect = onSkillSelect,
                 onSkillRemove = onSkillRemove
             )
-
         }
+
         StuddyButtonWhite(
             stringResource(R.string.Confirm),
             onClick = onConfirmClick,
@@ -109,57 +120,40 @@ fun StrengthsScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun StrengthsListInterface(
-    skillListState: SkillListState,
+    onBrowserSkillClick: () -> Unit,
     modifier: Modifier = Modifier,
     strengthsList: List<Skill>,
-    onSkillSelect: (Skill) -> Unit,
     onSkillRemove: (Skill) -> Unit
-
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
-//            .heightIn(min = 300.dp)
-            .border(
-                BorderStroke(1.dp, Color.White),
-                shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
-            )
-            .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall))
     ) {
         FlowRow(
             modifier = Modifier.padding(StuddyDimensions.skillListInterfacePadding),
-            horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),
-            verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
+            verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),
+            horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
         ) {
             strengthsList.forEach {
                 SkillPillRemovable(skill = it, onSkillRemove = onSkillRemove)
             }
         }
 
-        when (skillListState) {
-            is SkillListState.Loading -> SuggestionTextField(
-                possibleInputs = listOf<Skill>(
-                    Skill(
-                        1,
-                        "LOADING"
-                    )
-                ), onSkillSelect = onSkillSelect
-            )
+        HorizontalDivider(
+            color = Color.White,
+            thickness = 1.dp
+        )
 
-            is SkillListState.Success -> SuggestionTextField(
-                possibleInputs = skillListState.skillList,
-                onSkillSelect = onSkillSelect
-            )
-
-            is SkillListState.Error -> SuggestionTextField(
-                possibleInputs = listOf<Skill>(
-                    Skill(
-                        1,
-                        "ERROR"
-                    )
-                ), onSkillSelect = onSkillSelect
-            )
-        }
+        Text(text = "+ Browse Skills",
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .clickable {
+                    onBrowserSkillClick()
+                }
+                .padding(10.dp),
+            style = StuddyTypography.pXS,
+            color = LocalStuddyColors.current.primary700
+        )
     }
 }
 
