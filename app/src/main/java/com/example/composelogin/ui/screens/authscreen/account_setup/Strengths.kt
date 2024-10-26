@@ -136,7 +136,30 @@ fun StrengthsListInterface(
             }
         }
 
-        SuggestionTextField(skillListState = skillListState, onSkillSelect = onSkillSelect)
+        when (skillListState) {
+            is SkillListState.Loading -> SuggestionTextField(
+                possibleInputs = listOf<Skill>(
+                    Skill(
+                        1,
+                        "LOADING"
+                    )
+                ), onSkillSelect = onSkillSelect
+            )
+
+            is SkillListState.Success -> SuggestionTextField(
+                possibleInputs = skillListState.skillList,
+                onSkillSelect = onSkillSelect
+            )
+
+            is SkillListState.Error -> SuggestionTextField(
+                possibleInputs = listOf<Skill>(
+                    Skill(
+                        1,
+                        "ERROR"
+                    )
+                ), onSkillSelect = onSkillSelect
+            )
+        }
     }
 }
 
@@ -184,14 +207,9 @@ fun SkillPillRemovable(
 
 @Composable
 fun SuggestionTextField(
-    skillListState: SkillListState,
+    possibleInputs: List<Skill>,
     onSkillSelect: (Skill) -> Unit
 ) {
-    val possibleInputs = when(skillListState) {
-        is SkillListState.Loading -> listOf<Skill>(Skill(1, "LOADING"))
-        is SkillListState.Success -> skillListState.skillList
-        is SkillListState.Error -> listOf<Skill>(Skill(1, "ERROR"))
-    }
 
     var text by remember { mutableStateOf("") }
     val suggestions = remember(text) {
