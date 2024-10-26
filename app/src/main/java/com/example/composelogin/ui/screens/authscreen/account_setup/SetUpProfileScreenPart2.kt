@@ -31,9 +31,11 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -164,7 +166,6 @@ fun SetUpProfileScreenPart2(
                     ) {
                         Column(
                             modifier = Modifier
-//                                .verticalScroll(rememberScrollState())
                                 .fillMaxWidth()
                                 .padding(20.dp)
                         ) {
@@ -256,7 +257,6 @@ fun ModalStrengthsListInterface(
     skillListState: SkillListState,
     modifier: Modifier = Modifier,
     strengthsList: List<Skill>,
-
 ) {
     Column(modifier = modifier) {
         Column(
@@ -269,8 +269,10 @@ fun ModalStrengthsListInterface(
         ) {
             FlowRow(
                 modifier = Modifier
-                    .heightIn(min = 100.dp)
-                    .padding(StuddyDimensions.skillListInterfacePadding),
+                    .height(120.dp)
+                    .padding(StuddyDimensions.skillListInterfacePadding)
+                    .verticalScroll(rememberScrollState())
+                ,
                 verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),
                 horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
             ) {
@@ -283,17 +285,6 @@ fun ModalStrengthsListInterface(
                 color = LocalStuddyColors.current.primary900,
                 thickness = 1.dp
             )
-
-//            BasicTextField(
-//                text = "Search Skills",
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(10.dp)
-//                    .clickable {
-//                    },
-//                style = StuddyTypography.pXS,
-//                color = LocalStuddyColors.current.primary900
-//            )
 
             BasicTextField(
                 cursorBrush = SolidColor(Color.White),
@@ -360,11 +351,6 @@ fun LazySkillsColumn(
                         }
                         .padding(vertical = 15.dp)
                 ){
-//                    HorizontalDivider(
-//                        color = LocalStuddyColors.current.primary900,
-//                        thickness = 1.dp
-//                    )
-
                     Image(
                         painter = painterResource(id = R.drawable.book),
                         contentDescription = "logo"
