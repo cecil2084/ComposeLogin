@@ -1,6 +1,7 @@
 package com.example.composelogin.ui.screens.authscreen.account_setup
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -113,7 +114,6 @@ fun SetUpProfileScreenPart2(
                 onBackClick = {
                     if (uiState.currentPage != 1) {
                         navController.popBackStack()
-                        viewModel.previousPage()
                     } else {
                         onCancelLastClick()
                     }
@@ -135,11 +135,11 @@ fun SetUpProfileScreenPart2(
                         3 -> navController.navigate(SetUpNavRoutes.PREFERRED_TRAITS)
                         4 -> onConfirmLastClick()
                     }
-                    viewModel.nextPage()
                 },
             )
         }
     ) { innerPadding ->
+
         NavHost(
             modifier = Modifier.background(LocalStuddyColors.current.primary700),
             navController = navController,
@@ -156,6 +156,9 @@ fun SetUpProfileScreenPart2(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
+
+                viewModel.updatePage(1)
+
                 StrengthsAndWeaknessesScreen(
                     strengthSkillSet = uiState.strengths,
                     weaknessSkillSet = uiState.weaknesses,
@@ -164,8 +167,12 @@ fun SetUpProfileScreenPart2(
                         top = innerPadding.calculateTopPadding(),
                         end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
                     ),
-                    onStrengthBrowserSkillClick = { showStrengthBottomSheet = !showStrengthBottomSheet },
-                    onWeaknessBrowserSkillClick = { showWeaknessBottomSheet = !showWeaknessBottomSheet },
+                    onStrengthBrowserSkillClick = {
+                        showStrengthBottomSheet = !showStrengthBottomSheet
+                    },
+                    onWeaknessBrowserSkillClick = {
+                        showWeaknessBottomSheet = !showWeaknessBottomSheet
+                    },
                     onWeaknessSkillRemove = { viewModel.removeWeaknessSkill(it) },
                     onStrengthSkillRemove = { viewModel.removeStrengthSkill(it) }
                 )
@@ -187,13 +194,14 @@ fun SetUpProfileScreenPart2(
                         ) {
                             ModalSkillsListInterface(
                                 searchQuery = searchQueryState,
+                                skillListState = viewModel.skillListState,
+                                skillsList = uiState.strengths,
                                 onSearchChange = {
                                     viewModel.onSearchQueryChanged(it)
                                 },
-                                skillListState = viewModel.skillListState,
                                 onSkillSelect = { viewModel.addStrengthSkill(it) },
                                 onSkillRemove = { viewModel.removeStrengthSkill(it) },
-                                skillsList = uiState.strengths
+                                onSkillSuggest = { viewModel.filterSuggestion(it) }
                             )
                         }
                     }
@@ -214,13 +222,16 @@ fun SetUpProfileScreenPart2(
                         ) {
                             ModalSkillsListInterface(
                                 searchQuery = searchQueryState,
+                                skillListState = viewModel.skillListState,
+                                skillsList = uiState.weaknesses,
                                 onSearchChange = {
                                     viewModel.onSearchQueryChanged(it)
                                 },
-                                skillListState = viewModel.skillListState,
                                 onSkillSelect = { viewModel.addWeaknessSkill(it) },
                                 onSkillRemove = { viewModel.removeWeaknessSkill(it) },
-                                skillsList = uiState.weaknesses
+                                onSkillSuggest = {
+                                    viewModel.filterSuggestion(it)
+                                }
                             )
                         }
                     }
@@ -234,6 +245,8 @@ fun SetUpProfileScreenPart2(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
+                viewModel.updatePage(2)
+
                 PreferredStudyTimeScreen(
                     modifier = Modifier.padding(innerPadding)
                 )
@@ -246,6 +259,8 @@ fun SetUpProfileScreenPart2(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
+                viewModel.updatePage(3)
+
                 PreferredStudyFrequency(
                     modifier = Modifier.padding(innerPadding)
                 )
@@ -258,6 +273,14 @@ fun SetUpProfileScreenPart2(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
+
+//                BackHandler {
+//                    navController.popBackStack()
+//                    viewModel.previousPage()
+//                }
+
+                viewModel.updatePage(4)
+
                 PreferredTraits(
                     modifier = Modifier.padding(innerPadding)
                 )
@@ -270,12 +293,13 @@ fun SetUpProfileScreenPart2(
 @OptIn(ExperimentalLayoutApi::class)
 fun ModalSkillsListInterface(
     searchQuery: String,
-    onSearchChange: (String) -> Unit,
-    onSkillSelect: (Skill) -> Unit,
-    onSkillRemove: (Skill) -> Unit,
     skillListState: SkillListState,
     modifier: Modifier = Modifier,
     skillsList: List<Skill>,
+    onSearchChange: (String) -> Unit,
+    onSkillSelect: (Skill) -> Unit,
+    onSkillRemove: (Skill) -> Unit,
+    onSkillSuggest: (String) -> List<Skill>
 ) {
     Column(modifier = modifier) {
         Column(
@@ -305,7 +329,6 @@ fun ModalSkillsListInterface(
             )
 
             BasicTextField(
-                cursorBrush = SolidColor(Color.White),
                 value = searchQuery,
                 onValueChange = onSearchChange,
                 textStyle = StuddyTypography.pXS,
@@ -330,7 +353,7 @@ fun ModalSkillsListInterface(
         when (skillListState) {
             is SkillListState.Success -> LazySkillsColumn(
                 onSkillSelect = onSkillSelect,
-                skillList = skillListState.skillList
+                skillList = onSkillSuggest(searchQuery)
             )
 
             is SkillListState.Loading -> Text("LOADING...")

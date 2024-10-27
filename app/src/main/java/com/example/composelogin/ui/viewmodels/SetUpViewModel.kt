@@ -35,6 +35,14 @@ class SetUpViewModel : ViewModel() {
         _searchQueryState.value = updatedText
     }
 
+    fun updatePage(page:Int){
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentPage = page
+            )
+        }
+    }
+
     fun nextPage() {
         _uiState.update { currentState ->
             currentState.copy(
@@ -56,8 +64,10 @@ class SetUpViewModel : ViewModel() {
     }
 
     private fun fetchSkills() {
-        viewModelScope.launch(Dispatchers.Main) {
-            skillListState = SkillListState.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(Dispatchers.Main) {
+                skillListState = SkillListState.Loading
+            }
             delay(2000L)
             skillListState = try {
                 SkillListState.Success(skillsList)
