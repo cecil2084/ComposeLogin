@@ -1,10 +1,9 @@
 package com.example.composelogin.ui.screens.authscreen.account_setup
 
 import android.annotation.SuppressLint
-import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
@@ -46,7 +45,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +57,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -74,10 +72,10 @@ import androidx.navigation.compose.composable
 import com.example.composelogin.R
 import com.example.composelogin.SetUpNavRoutes
 import com.example.composelogin.model.Skill
-import com.example.composelogin.model.SkillListState
 import com.example.composelogin.model.TOTAL_PAGE
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
+import com.example.composelogin.ui.states.SkillListState
 import com.example.composelogin.ui.theme.LocalStuddyColors
 import com.example.composelogin.ui.theme.StuddyTypography
 import com.example.composelogin.ui.viewmodels.SetUpViewModel
@@ -130,10 +128,11 @@ fun SetUpProfileScreenPart2(
                     .navigationBarsPadding(),
                 onClick = {
                     when (uiState.currentPage) {
-                        1 -> navController.navigate(SetUpNavRoutes.PREFERRED_STUDY_TIME)
-                        2 -> navController.navigate(SetUpNavRoutes.PREFERRED_FREQUENCY)
-                        3 -> navController.navigate(SetUpNavRoutes.PREFERRED_TRAITS)
-                        4 -> onConfirmLastClick()
+                        1 -> navController.navigate(SetUpNavRoutes.WEAKNESSES)
+                        2 -> navController.navigate(SetUpNavRoutes.PREFERRED_STUDY_TIME)
+                        3 -> navController.navigate(SetUpNavRoutes.PREFERRED_FREQUENCY)
+                        4 -> navController.navigate(SetUpNavRoutes.PREFERRED_TRAITS)
+                        5 -> onConfirmLastClick()
                     }
                 },
             )
@@ -159,29 +158,27 @@ fun SetUpProfileScreenPart2(
 
                 viewModel.updatePage(1)
 
-                StrengthsAndWeaknessesScreen(
-                    strengthSkillSet = uiState.strengths,
-                    weaknessSkillSet = uiState.weaknesses,
+                SkillsScreen(
+                    title = R.string.strengths,
+                    description = R.string.strengths_info,
+                    skillSet = uiState.strengths,
                     modifier = Modifier.padding(
                         start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
                         top = innerPadding.calculateTopPadding(),
                         end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
                     ),
-                    onStrengthBrowserSkillClick = {
+                    onBrowseSkillClick = {
                         showStrengthBottomSheet = !showStrengthBottomSheet
                     },
-                    onWeaknessBrowserSkillClick = {
-                        showWeaknessBottomSheet = !showWeaknessBottomSheet
-                    },
-                    onWeaknessSkillRemove = { viewModel.removeWeaknessSkill(it) },
-                    onStrengthSkillRemove = { viewModel.removeStrengthSkill(it) }
+                    onSkillRemove = { viewModel.removeStrengthSkill(it) }
                 )
-
 
                 if (showStrengthBottomSheet) {
                     ModalBottomSheet(
+                        shape = RectangleShape,
                         containerColor = Color.White,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize(),
                         onDismissRequest = {
                             showStrengthBottomSheet = false
                         },
@@ -206,8 +203,35 @@ fun SetUpProfileScreenPart2(
                         }
                     }
                 }
+            }
+
+            composable(
+                route = SetUpNavRoutes.WEAKNESSES,
+                enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
+                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
+                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
+            ) {
+                viewModel.updatePage(2)
+
+                SkillsScreen(
+                    title = R.string.Weaknesses,
+                    description = R.string.weaknesses_info,
+                    skillSet = uiState.weaknesses,
+                    modifier = Modifier.padding(
+                        start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+                        top = innerPadding.calculateTopPadding(),
+                        end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
+                    ),
+                    onBrowseSkillClick = {
+                        showWeaknessBottomSheet = !showWeaknessBottomSheet
+                    },
+                    onSkillRemove = { viewModel.removeWeaknessSkill(it) }
+                )
+
                 if (showWeaknessBottomSheet) {
                     ModalBottomSheet(
+                        shape = RectangleShape,
                         containerColor = Color.White,
                         modifier = Modifier.fillMaxSize(),
                         onDismissRequest = {
@@ -245,10 +269,17 @@ fun SetUpProfileScreenPart2(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
-                viewModel.updatePage(2)
+                viewModel.updatePage(3)
 
                 PreferredStudyTimeScreen(
-                    modifier = Modifier.padding(innerPadding)
+                    choiceList = uiState.preferredStudyTime,
+                    title = R.string.preferred_study_time,
+                    description = R.string.preferred_traits_description,
+                    modifier = Modifier.padding(innerPadding),
+                    onSelectionChange = {
+                        if (uiState.preferredStudyTime.count { item -> item.isSelected } < 3 || it.isSelected)
+                            viewModel.toggleStudyTime(it)
+                    }
                 )
             }
 
@@ -259,10 +290,17 @@ fun SetUpProfileScreenPart2(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
-                viewModel.updatePage(3)
+                viewModel.updatePage(4)
 
-                PreferredStudyFrequency(
-                    modifier = Modifier.padding(innerPadding)
+                PreferredStudyTimeScreen(
+                    choiceList = uiState.preferredStudyFrequency,
+                    title = R.string.preferred_study_frequency,
+                    description = R.string.preferred_study_frequency_description,
+                    modifier = Modifier.padding(innerPadding),
+                    onSelectionChange = {
+                        if (uiState.preferredStudyFrequency.count { item -> item.isSelected } < 3 || it.isSelected)
+                            viewModel.toggleStudyFrequency(it)
+                    }
                 )
             }
 
@@ -273,10 +311,17 @@ fun SetUpProfileScreenPart2(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
-                viewModel.updatePage(4)
+                viewModel.updatePage(5)
 
-                PreferredTraits(
-                    modifier = Modifier.padding(innerPadding)
+                PreferredStudyTimeScreen(
+                    choiceList = uiState.studyPartnerTraits,
+                    title = R.string.preferred_traits,
+                    description = R.string.preferred_traits_description,
+                    modifier = Modifier.padding(innerPadding),
+                    onSelectionChange = {
+                        if (uiState.studyPartnerTraits.count { item -> item.isSelected } < 3 || it.isSelected)
+                            viewModel.toggleStudyTraits(it)
+                    }
                 )
             }
         }
@@ -454,7 +499,11 @@ fun ProgressBar(
 ) {
     val ratio by animateFloatAsState(
         targetValue = progressRatio,
-        animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
+//        animationSpec = tween(durationMillis = 220, easing = FastOutSlowInEasing),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy, // Adjusts the bounciness
+            stiffness = Spring.StiffnessLow // Adjusts the resistance, making it more or less elastic
+        ),
         label = "ratio animation"
     )
     Row(

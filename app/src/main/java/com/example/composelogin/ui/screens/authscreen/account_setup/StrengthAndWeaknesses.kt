@@ -1,5 +1,6 @@
 package com.example.composelogin.ui.screens.authscreen.account_setup
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,106 +51,54 @@ import com.example.composelogin.ui.theme.StuddyTypography
 import com.example.composelogin.ui.theme.fredokaFamily
 
 @Composable
-fun StrengthsAndWeaknessesScreen(
-    strengthSkillSet: List<Skill>,
-    weaknessSkillSet: List<Skill>,
+fun SkillsScreen(
+    @StringRes title: Int,
+    @StringRes description: Int,
+    skillSet: List<Skill>,
     modifier: Modifier = Modifier,
-    onStrengthBrowserSkillClick: () -> Unit,
-    onWeaknessBrowserSkillClick: () -> Unit,
-    onStrengthSkillRemove: (Skill) -> Unit,
-    onWeaknessSkillRemove: (Skill) -> Unit
+    onBrowseSkillClick: () -> Unit,
+    onSkillRemove: (Skill) -> Unit
 
     ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
         modifier = modifier
             .background(Color.Transparent)
             .fillMaxSize()
             .padding(20.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        Column(
+        Text(
+            text = stringResource(title),
+            fontFamily = fredokaFamily,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+            fontSize = 20.sp,
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = stringResource(description),
+            style = StuddyTypography.pXS,
+            color = Color.White,
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        SkillsListInterface(
             modifier = Modifier
-                .background(LocalStuddyColors.current.primary700)
-                .fillMaxSize()
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
+                .fillMaxWidth()
+                .border(
+                    BorderStroke(1.dp, Color.White),
+                    shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
+                )
+                .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)),
+            onBrowserSkillClick = onBrowseSkillClick,
+            strengthsList = skillSet,
+            onSkillRemove = onSkillRemove
+        )
 
-        ) {
-            /* STRENGTHS */
-
-            Text(
-                text = stringResource(R.string.strengths),
-                fontFamily = fredokaFamily,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White,
-                fontSize = 20.sp,
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                text = stringResource(R.string.strengths_info),
-                style = StuddyTypography.pXS,
-                color = Color.White,
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            SkillsListInterface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        BorderStroke(1.dp, Color.White),
-                        shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
-                    )
-                    .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)),
-                onBrowserSkillClick = onStrengthBrowserSkillClick,
-                strengthsList = strengthSkillSet,
-                onSkillRemove = onStrengthSkillRemove
-            )
-
-            /* SPACER */
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            /* WEAKNESSES */
-
-            Text(
-                text = stringResource(R.string.Weaknesses),
-                fontFamily = fredokaFamily,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White,
-                fontSize = 20.sp,
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                text = stringResource(R.string.weaknesses_info),
-                style = StuddyTypography.pXS,
-                color = Color.White,
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            SkillsListInterface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        BorderStroke(1.dp, Color.White),
-                        shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)
-                    )
-                    .clip(shape = RoundedCornerShape(StuddyDimensions.borderRadiusSmall)),
-                onBrowserSkillClick = onWeaknessBrowserSkillClick,
-                strengthsList = weaknessSkillSet,
-                onSkillRemove = onWeaknessSkillRemove
-            )
-
-            /* SPACER */
-
-            Spacer(modifier = Modifier.height(150.dp))
-        }
+        Spacer(modifier = Modifier.height(120.dp))
     }
 }
 

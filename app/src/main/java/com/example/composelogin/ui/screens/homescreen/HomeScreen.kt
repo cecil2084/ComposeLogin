@@ -25,7 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.composelogin.MainNavRoutes
-import com.example.composelogin.model.mockProfile
+import com.example.composelogin.data.mockProfile
 import com.example.composelogin.ui.screens.styles.StuddyLogoStartUpScreenSmaller
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
 import com.example.composelogin.ui.theme.LocalStuddyColors

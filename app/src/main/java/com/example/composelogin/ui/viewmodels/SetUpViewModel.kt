@@ -5,12 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.composelogin.data.preferredStudyFrequencyList
+import com.example.composelogin.data.preferredStudyTimeList
+import com.example.composelogin.data.preferredTraitsList
 import com.example.composelogin.data.skillsList
 import com.example.composelogin.model.Skill
-import com.example.composelogin.model.SkillListState
 import com.example.composelogin.ui.Exceptions.ListLoadingInProgressException
 import com.example.composelogin.ui.Exceptions.ListNotLoadedException
+import com.example.composelogin.ui.states.SelectionState
 import com.example.composelogin.ui.states.SetUpProfileState
+import com.example.composelogin.ui.states.SkillListState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +35,14 @@ class SetUpViewModel : ViewModel() {
     var skillListState: SkillListState by mutableStateOf(SkillListState.Loading)
         private set
 
+
+    init {
+        fetchSkills()
+        fetchPreferredStudyTime()
+        fetchPreferredFrequency()
+        fetchPreferredTraits()
+    }
+
     fun onSearchQueryChanged(updatedText: String){
         _searchQueryState.value = updatedText
     }
@@ -41,10 +53,6 @@ class SetUpViewModel : ViewModel() {
                 currentPage = page
             )
         }
-    }
-
-    init {
-        fetchSkills()
     }
 
     private fun fetchSkills() {
@@ -120,6 +128,87 @@ class SetUpViewModel : ViewModel() {
                 }
             is SkillListState.Loading -> throw ListLoadingInProgressException("di pa tapos mag load eh")
             is SkillListState.Error -> throw ListNotLoadedException("awww di nag load :(")
+        }
+    }
+
+    private fun fetchPreferredStudyTime() {
+        viewModelScope.launch {
+            delay(2000L)
+            _uiState.update { currentState ->
+                currentState.copy(
+                    preferredStudyTime = preferredStudyTimeList
+                )
+            }
+        }
+    }
+
+    private fun fetchPreferredFrequency() {
+        viewModelScope.launch {
+            delay(2000L)
+            _uiState.update { currentState ->
+                currentState.copy(
+                    preferredStudyFrequency = preferredStudyFrequencyList
+                )
+            }
+        }
+    }
+
+    private fun fetchPreferredTraits() {
+        viewModelScope.launch {
+            delay(2000L)
+            _uiState.update { currentState ->
+                currentState.copy(
+                    studyPartnerTraits = preferredTraitsList
+                )
+            }
+        }
+    }
+
+    fun toggleStudyTime(selection : SelectionState) {
+        val updatedList = _uiState.value.preferredStudyTime.map { studyTime ->
+            if (studyTime.selection.id == selection.selection.id) {
+                SelectionState(selection = selection.selection, isSelected = !selection.isSelected)
+            } else{
+                studyTime
+            }
+        }
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                preferredStudyTime = updatedList
+            )
+        }
+    }
+
+    fun toggleStudyFrequency(selection : SelectionState) {
+        val updatedList = _uiState.value.preferredStudyFrequency.map { studyFrequency ->
+            if (studyFrequency.selection.id == selection.selection.id) {
+                SelectionState(selection = selection.selection, isSelected = !selection.isSelected)
+            } else{
+                studyFrequency
+            }
+        }
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                preferredStudyFrequency = updatedList
+            )
+        }
+    }
+
+    fun toggleStudyTraits(selection : SelectionState) {
+        val updatedList = _uiState.value.studyPartnerTraits.map { preferredTrait ->
+            if (preferredTrait.selection.id == selection.selection.id) {
+                SelectionState(selection = selection.selection, isSelected = !selection.isSelected)
+            } else{
+                preferredTrait
+            }
+        }
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                studyPartnerTraits = updatedList
+            )
         }
     }
 }

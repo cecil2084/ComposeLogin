@@ -1,9 +1,6 @@
-package com.example.composelogin.model
+package com.example.composelogin.ui.states
 
-data class Skill(
-    val id: Int,
-    val name: String
-)
+import com.example.composelogin.model.Skill
 
 sealed interface SkillListState{
     data class Success(val skillList: List<Skill>) : SkillListState

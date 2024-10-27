@@ -27,4 +27,14 @@
 
     <string name="Weaknesses">Weaknesses</string>
     <string name="weaknesses_info">Do you have any skills that you are struggling with and need help from others? Add them here.</string>
+
+    <string name="preferred_study_time">What is your preferred study time when studying?</string>
+    <string name="preferred_study_time_description">You can select up to three (3).</string>
+
+    <string name="preferred_study_frequency">How frequently do you study?</string>
+    <string name="preferred_study_frequency_description">You can select up to three (3).</string>
+
+    <string name="preferred_traits">What traits are you looking for in a study buddy?</string>
+    <string name="preferred_traits_description">You can select up to three (3).</string>
+
 </resources>
