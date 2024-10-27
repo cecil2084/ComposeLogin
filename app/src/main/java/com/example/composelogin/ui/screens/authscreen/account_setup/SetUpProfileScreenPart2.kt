@@ -273,12 +273,6 @@ fun SetUpProfileScreenPart2(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
             ) {
-
-//                BackHandler {
-//                    navController.popBackStack()
-//                    viewModel.previousPage()
-//                }
-
                 viewModel.updatePage(4)
 
                 PreferredTraits(

@@ -43,22 +43,6 @@ class SetUpViewModel : ViewModel() {
         }
     }
 
-    fun nextPage() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                currentPage = currentState.currentPage + 1
-            )
-        }
-    }
-
-    fun previousPage() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                currentPage = currentState.currentPage - 1
-            )
-        }
-    }
-
     init {
         fetchSkills()
     }
