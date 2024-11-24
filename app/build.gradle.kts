@@ -1,6 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+//    alias(libs.plugins.jetbrains.kotlin.android)
+    id("org.jetbrains.kotlin.android")
+
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -40,7 +44,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     packaging {
         resources {
@@ -84,8 +88,27 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
-//    implementation(libs.coil.compose)
+    implementation(libs.converter.gson)
 
-    implementation ("io.coil-kt:coil:2.2.2")
-    implementation ("io.coil-kt:coil-compose:2.2.2")
+    // implementation(libs.coil.compose)
+    implementation (libs.coil)
+    implementation (libs.coil.compose.v222)
+
+    // dagger hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // DataStore for token storage
+    implementation(libs.androidx.datastore.preferences)
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }

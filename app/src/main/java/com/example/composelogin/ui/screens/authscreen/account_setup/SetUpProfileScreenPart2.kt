@@ -1,5 +1,6 @@
 package com.example.composelogin.ui.screens.authscreen.account_setup
 
+import kotlin.math.round
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -522,6 +523,7 @@ fun ProgressBar(
             )
         }
         Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .padding(end = 25.dp)
                 .clip(RoundedCornerShape(100.dp))
@@ -530,6 +532,9 @@ fun ProgressBar(
                 .aspectRatio(15f)
         ) {
             val progressColor: Color = LocalStuddyColors.current.accent2700
+            val percentColor: Color =
+                if (progressRatio < 0.5) LocalStuddyColors.current.accent2700 else Color.White
+//            Text("${progressRatio * 100}")
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawRoundRect(
                     color = progressColor,
@@ -537,6 +542,12 @@ fun ProgressBar(
                     cornerRadius = CornerRadius(this.size.height)
                 )
             }
+
+            Text(
+                color = percentColor,
+                text = " ${round(progressRatio * 100).toInt()}%",
+                style = StuddyTypography.pXS
+            )
         }
     }
 }
