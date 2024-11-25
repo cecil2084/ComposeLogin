@@ -47,7 +47,10 @@ import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonBlue
 import com.example.composelogin.ui.screens.styles.StuddyLogoStartUpScreen
 import com.example.composelogin.ui.screens.styles.textfields.StuddyTextFieldGray
 import com.example.composelogin.ui.screens.styles.StuddyToggleButton
+import com.example.composelogin.ui.states.LoginState
+import com.example.composelogin.ui.states.LoginUiState
 import com.example.composelogin.ui.theme.LocalStuddyColors
+import com.example.composelogin.ui.theme.StuddyTypography
 import com.example.composelogin.ui.theme.fredokaFamily
 import com.example.composelogin.ui.theme.quicksandFamily
 
@@ -55,11 +58,11 @@ import com.example.composelogin.ui.theme.quicksandFamily
 fun MainLoginScreen(
     email: String,
     password: String,
-    rememberMe: Boolean,
     onEmailChange: (String) -> Unit,
-    onRememberMeToggle: () -> Unit,
     onPasswordChange: (String) -> Unit,
     onSignUpClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    uiState: LoginUiState,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -75,11 +78,11 @@ fun MainLoginScreen(
         LoginContainer(
             email,
             password,
-            rememberMe,
             onEmailChange,
             onPasswordChange,
-            onRememberMeToggle,
             onSignUpClick,
+            onLoginClick,
+            uiState
         )
     }
 }
@@ -88,12 +91,34 @@ fun MainLoginScreen(
 fun LoginContainer(
     email: String,
     password: String,
-    rememberMe: Boolean,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onRememberMeChange: () -> Unit,
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    uiState: LoginUiState,
 ) {
+
+    var isError by remember { mutableStateOf(false) }
+    var loginLabel by remember { mutableStateOf("Log in") }
+
+
+    when (uiState) {
+        is LoginUiState.Loading -> {
+            loginLabel = "Loading..."
+        }
+        is LoginUiState.Error -> {
+            loginLabel = "Log in"
+            isError = true
+        }
+        is LoginUiState.Success -> {
+            loginLabel = "Success!"
+            isError = false
+        }
+        else -> {
+            loginLabel = "Log in"
+            isError = false
+        }
+    }
 
     val text: AnnotatedString = buildAnnotatedString {
         append(stringResource(R.string.new_to_studdy) + " ")
@@ -137,14 +162,28 @@ fun LoginContainer(
             value = email,
             onValueChange = onEmailChange,
             label = stringResource(R.string.email_label),
-            placeholder = stringResource(R.string.email_placeholder)
+            placeholder = "johnny_AppleSeed",
+            isError = isError,
         )
         StuddyTextFieldGray(
             value = password,
             onValueChange = onPasswordChange,
             label = stringResource(R.string.password_label),
-            isPassword = true
+            isPassword = true,
+            isError = isError,
         )
+
+        if (isError) {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Invalid Username and Password",
+                    color = LocalStuddyColors.current.error700,
+                    style = StuddyTypography.pXXS
+                )
+            }
+        }
 
         Row(
             modifier = Modifier.width(265.dp),
@@ -154,17 +193,17 @@ fun LoginContainer(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StuddyToggleButton(
-                    enabled = true,
-                    checked = rememberMe,
-                    onClick = onRememberMeChange)
-                Text(
-                    text = stringResource(R.string.remember_me),
-                    fontSize = 12.sp,
-                    fontFamily = quicksandFamily,
-                    fontWeight = FontWeight.Medium,
-                    color = LocalStuddyColors.current.lightNeutral600
-                )
+//                StuddyToggleButton(
+//                    enabled = true,
+//                    checked = rememberMe,
+//                    onClick = onRememberMeChange)
+//                Text(
+//                    text = stringResource(R.string.remember_me),
+//                    fontSize = 12.sp,
+//                    fontFamily = quicksandFamily,
+//                    fontWeight = FontWeight.Medium,
+//                    color = LocalStuddyColors.current.lightNeutral600
+//                )
             }
             Text(
                 text = stringResource(R.string.forgot_password),
@@ -178,11 +217,11 @@ fun LoginContainer(
         Spacer(modifier = Modifier.height(16.dp))
 
         StuddyButtonBlue(
-            content = stringResource(R.string.login),
-            onClick = { }
+//            content = stringResource(R.string.login),
+            content = loginLabel,
+            onClick = onLoginClick
         )
 
-//            Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = stringResource(R.string.or_login_using),

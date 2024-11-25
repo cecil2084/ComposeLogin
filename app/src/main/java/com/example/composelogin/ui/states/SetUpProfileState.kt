@@ -1,8 +1,6 @@
 package com.example.composelogin.ui.states
 
-import com.example.composelogin.model.PreferredStudyFrequency
 import com.example.composelogin.model.PreferredStudyTime
-import com.example.composelogin.model.PreferredTraits
 import com.example.composelogin.model.Skill
 
 data class SetUpProfileState (

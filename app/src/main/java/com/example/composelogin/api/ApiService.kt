@@ -1,17 +1,17 @@
 package com.example.composelogin.api
 
-import com.example.composelogin.model.AuthResponse
-import com.example.composelogin.model.LoginRequest
-import com.example.composelogin.model.UserProfile
-import retrofit2.http.*
+import com.example.composelogin.model.LogInDataRequestModel
+import com.example.composelogin.model.LogInDataResponseModel
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.POST
 
-//data class LoginRequest(val email: String, val password: String)
-//data class LoginResponse(val token: String)
-
-interface ApiService {
-    @POST("api/v0/auth")
-    suspend fun login(@Body request: LoginRequest): AuthResponse
-
-    @GET("user/profile")
-    suspend fun getUserProfile(@Header("Authorization") token: String): UserProfile
+interface LoginService {
+    @POST("api/v0/auth/login")
+    suspend fun login(
+        @Body loginRequest: LogInDataRequestModel,
+        @Header("Cookie") cookie: String
+    ): Response<LogInDataResponseModel>
 }
+

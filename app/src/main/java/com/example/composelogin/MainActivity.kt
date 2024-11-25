@@ -21,7 +21,7 @@ import com.example.composelogin.ui.screens.homescreen.MainScreenApp
 import com.example.composelogin.ui.theme.ComposeLoginTheme
 import com.example.composelogin.ui.viewmodels.LoginViewModel
 import com.example.composelogin.ui.viewmodels.SignUpViewModel
-import androidx.hilt.navigation.compose.hiltViewModel
+import java.util.UUID
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,16 +68,18 @@ class MainActivity : ComponentActivity() {
                             popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                             popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
                         ) {
-                            val viewModel: LoginViewModel = hiltViewModel()
+                            val uuid: UUID = UUID.randomUUID()
+                            val viewModel: LoginViewModel = viewModel()
                             val uiState by viewModel.loginState.collectAsState()
+                            val authState by viewModel.loginUiState.collectAsState()
                             MainLoginScreen(
-                                email = uiState.email,
+                                email = uiState.username,
                                 password = uiState.password,
-                                rememberMe = uiState.rememberMe,
                                 onEmailChange = { viewModel.onEmailChange(it) },
                                 onPasswordChange = { viewModel.onPasswordChange(it) },
-                                onRememberMeToggle = { viewModel.onRememberMeChange() },
                                 onSignUpClick = { navController.navigate(AuthNavRoutes.SIGNUP) },
+                                onLoginClick = { viewModel.login(uuid, uiState.username, uiState.password) },
+                                uiState = authState
                             )
                         }
 
