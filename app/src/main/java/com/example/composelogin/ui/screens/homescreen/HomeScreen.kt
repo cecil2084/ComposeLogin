@@ -3,6 +3,7 @@ package com.example.composelogin.ui.screens.homescreen
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +42,7 @@ import com.example.composelogin.ui.screens.styles.StuddyLogoStartUpScreenSmaller
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
 import com.example.composelogin.ui.states.UserRecommendationsState
 import com.example.composelogin.ui.theme.LocalStuddyColors
+import com.example.composelogin.ui.theme.StuddyTypography
 import com.example.composelogin.ui.viewmodels.HomeViewModel
 
 @Composable
@@ -195,11 +198,35 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMod
 
         Box {
             when (uiState) {
-                is UserRecommendationsState.Loading -> Text("Loading")
-                is UserRecommendationsState.Error -> Text("Error Processing Recommendations")
+                is UserRecommendationsState.Loading -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "Loading",
+                            color = Color.LightGray,
+                            style = StuddyTypography.hL
+                        )
+                        CircularProgressIndicator()
+                    }
+                }
+                is UserRecommendationsState.Error -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "Error Loading Recommendations :-(",
+                            color = Color.LightGray,
+                            style = StuddyTypography.hL
+                        )
+                    }
+                }
                 is UserRecommendationsState.Success -> {
                     if ((uiState as UserRecommendationsState.Success).userRecommendations?.items?.isNotEmpty() == true)
-                        (uiState as UserRecommendationsState.Success).userRecommendations?.items?.forEach { it ->
+                        (uiState as UserRecommendationsState.Success).userRecommendations?.items?.forEachIndexed() {index, it ->
                             var school by remember { mutableStateOf("unknown") }
                             var degreeProgram by remember { mutableStateOf("unknown") }
 
@@ -231,7 +258,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMod
                                 Card(
                                     shape = RoundedCornerShape(StuddyDimensions.cardRoundedRadius),
                                     elevation = CardDefaults.cardElevation(
-                                        defaultElevation = StuddyDimensions.shadowElevation
+                                        defaultElevation = if (index == 0) StuddyDimensions.shadowElevation else 0.dp
                                     ),
                                     modifier = Modifier
                                         .padding(StuddyDimensions.cardPadding)
@@ -252,7 +279,16 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMod
                             }
                         }
                     else {
-                        Text(text = "Noting to Show")
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Text(
+                                text = "Nothing to Show ;-)",
+                                color = Color.LightGray,
+                                style = StuddyTypography.hL
+                            )
+                        }
                     }
                 }
             }
