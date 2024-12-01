@@ -5,6 +5,8 @@ plugins {
 
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.7.20"
 }
 
 android {
@@ -101,12 +103,18 @@ dependencies {
 
     // DataStore for token storage
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.swipeablecard)
 }
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
+
+//repositories {
+//    mavenCentral()
+//}
 
 // Allow references to generated code
 kapt {

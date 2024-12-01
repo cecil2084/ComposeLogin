@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.composelogin.R
 import com.example.composelogin.model.UserProfileSwipeDetails
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
@@ -62,7 +63,7 @@ fun SwipeCard(
     sensitivityFactor: Float = 3f,
     content: @Composable () -> Unit
 ) {
-    var offset by remember { mutableFloatStateOf(0f) }
+    var offset by remember { mutableStateOf(0f) }
     var dismissRight by remember { mutableStateOf(false) }
     var dismissLeft by remember { mutableStateOf(false) }
     val density = LocalDensity.current.density
@@ -104,17 +105,21 @@ fun SwipeCard(
             }
         }
         .graphicsLayer(
-            alpha = 10f - animateFloatAsState(if (dismissRight) 1f else 0f, label = "").value,
-            rotationZ = animateFloatAsState(offset / 50, label = "").value
+            alpha = 10f - animateFloatAsState(if (dismissRight) 1f else 0f).value,
+            rotationZ = animateFloatAsState(offset / 50).value
         )) {
-
         content()
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun UserProfileCard(modifier: Modifier = Modifier, userProfileCard: UserProfileSwipeDetails) {
+fun UserProfileCard(
+    modifier: Modifier = Modifier,
+    userProfileCard: UserProfileSwipeDetails,
+    onAccept: () -> Unit,
+    onReject: () -> Unit
+) {
     Box(
         modifier = modifier
     ) {
@@ -125,9 +130,24 @@ fun UserProfileCard(modifier: Modifier = Modifier, userProfileCard: UserProfileS
                 .background(Color.White)
 
         ) {
-            Image(
-                painter = painterResource(id = userProfileCard.profilePicture),
-                contentDescription = "racy user profile picture",
+//            Image(
+//                painter = painterResource(id = userProfileCard.profilePicture),
+//                contentDescription = "racy user profile picture",
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .aspectRatio(StuddyDimensions.cardAspectRatio)
+//                    .clip(
+//                        RoundedCornerShape(
+//                            bottomStart = StuddyDimensions.cardRoundedRadius,
+//                            bottomEnd = StuddyDimensions.cardRoundedRadius
+//                        )
+//                    ),
+//                contentScale = ContentScale.Crop
+//            )
+
+            AsyncImage(
+                model = userProfileCard.profilePicture,
+                contentDescription = "${userProfileCard.name}'s profile picture",
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(StuddyDimensions.cardAspectRatio)
@@ -188,7 +208,7 @@ fun UserProfileCard(modifier: Modifier = Modifier, userProfileCard: UserProfileS
                     verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
                 ) {
                     userProfileCard.academicSkills.forEach {
-                        ItemSkillPill(it)
+                        ItemSkillPill(it.name)
                     }
                 }
 
@@ -205,7 +225,7 @@ fun UserProfileCard(modifier: Modifier = Modifier, userProfileCard: UserProfileS
                     verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
                 ) {
                     userProfileCard.otherSkills.forEach {
-                        ItemSkillPill(it)
+                        ItemSkillPill(it.name)
                     }
                 }
             }
@@ -235,7 +255,7 @@ fun UserProfileCard(modifier: Modifier = Modifier, userProfileCard: UserProfileS
                 )
             }
             Row {
-                IconButton(onClick = {}) {
+                IconButton(onClick = onAccept) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.accept_user_btn),
                         contentDescription = "Accept Profile",
@@ -244,7 +264,7 @@ fun UserProfileCard(modifier: Modifier = Modifier, userProfileCard: UserProfileS
                     )
                 }
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = onReject) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.reject_user_btn),
                         contentDescription = "Reject Profile",

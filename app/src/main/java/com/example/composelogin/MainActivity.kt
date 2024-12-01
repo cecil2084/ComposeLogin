@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.composelogin.api.Token
 import com.example.composelogin.ui.screens.authscreen.MainLoginScreen
 import com.example.composelogin.ui.screens.authscreen.account_setup.MainProfileDetailsSetUp
 import com.example.composelogin.ui.screens.authscreen.MainSignUpScreen
@@ -21,6 +22,7 @@ import com.example.composelogin.ui.screens.homescreen.MainScreenApp
 import com.example.composelogin.ui.theme.ComposeLoginTheme
 import com.example.composelogin.ui.viewmodels.LoginViewModel
 import com.example.composelogin.ui.viewmodels.SignUpViewModel
+import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 class MainActivity : ComponentActivity() {
@@ -39,7 +41,10 @@ class MainActivity : ComponentActivity() {
                     popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                     popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
                 ) {
-                    navigation(route = AuthNavRoutes.AUTH, startDestination = AuthNavRoutes.SIGNUP) {
+                    navigation(
+                        route = AuthNavRoutes.AUTH,
+                        startDestination = AuthNavRoutes.SIGNUP
+                    ) {
                         composable(
                             route = AuthNavRoutes.SIGNUP,
                             enterTransition = { slideInHorizontally(initialOffsetX = { it }) },
@@ -53,7 +58,7 @@ class MainActivity : ComponentActivity() {
                                 username = uiState.username,
                                 email = uiState.email,
                                 password = uiState.password,
-                                onUsernameChange = { viewModel.onUsernameChange(it) } ,
+                                onUsernameChange = { viewModel.onUsernameChange(it) },
                                 onEmailChange = { viewModel.onEmailChange(it) },
                                 onPasswordChange = { viewModel.onPasswordChange(it) },
                                 onSignUpClick = { navController.navigate(AuthNavRoutes.SETUP_PROFILE) },
@@ -78,7 +83,12 @@ class MainActivity : ComponentActivity() {
                                 onEmailChange = { viewModel.onEmailChange(it) },
                                 onPasswordChange = { viewModel.onPasswordChange(it) },
                                 onSignUpClick = { navController.navigate(AuthNavRoutes.SIGNUP) },
-                                onLoginClick = { viewModel.login(uuid, uiState.username, uiState.password) },
+                                onLoginClick = {
+                                    viewModel.login(uuid, uiState.username, uiState.password)
+                                    if (Token.token != null) {
+                                        navController.navigate(MainNavRoutes.MAIN)
+                                    }
+                                },
                                 uiState = authState
                             )
                         }
@@ -89,7 +99,7 @@ class MainActivity : ComponentActivity() {
                             exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
                             popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                             popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
-                            ) {
+                        ) {
                             MainProfileDetailsSetUp(
                                 onSignUpClick = { navController.navigate(AuthNavRoutes.SIGNUP) },
                                 onConfirmClick = {
@@ -104,11 +114,11 @@ class MainActivity : ComponentActivity() {
                             exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },
                             popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
                             popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
-                            ) {
+                        ) {
                             val setUpNavController = rememberNavController()
                             SetUpProfileScreenPart2(
-                                onCancelLastClick = {navController.popBackStack()},
-                                onConfirmLastClick = {navController.navigate(MainNavRoutes.MAIN)},
+                                onCancelLastClick = { navController.popBackStack() },
+                                onConfirmLastClick = { navController.navigate(MainNavRoutes.MAIN) },
                                 navController = setUpNavController
                             )
                         }

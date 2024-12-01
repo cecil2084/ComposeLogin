@@ -11,24 +11,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.composelogin.MainNavRoutes
-import com.example.composelogin.data.mockProfile
+import com.example.composelogin.model.UserProfileSwipeDetails
 import com.example.composelogin.ui.screens.styles.StuddyLogoStartUpScreenSmaller
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
+import com.example.composelogin.ui.states.UserRecommendationsState
 import com.example.composelogin.ui.theme.LocalStuddyColors
+import com.example.composelogin.ui.viewmodels.HomeViewModel
 
 @Composable
 fun MainScreenApp(
@@ -102,6 +114,13 @@ fun MainScreenApp(
                             )
                         )
                         .padding(top = 20.dp)
+                        .clip(
+                            shape = RoundedCornerShape(
+                                bottomStart = StuddyDimensions.bottomRoundedRadius,
+                                bottomEnd = StuddyDimensions.bottomRoundedRadius
+                            )
+                        )
+                        .verticalScroll(rememberScrollState())
                 )
             }
 
@@ -158,7 +177,9 @@ fun MainScreenApp(
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewModel()) {
+
+    val uiState by viewModel.userRecommendationState.collectAsState()
 
     Column(
         modifier = modifier
@@ -167,36 +188,73 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             contentAlignment = Alignment.CenterEnd,
             modifier = Modifier.fillMaxWidth()
         ) {
-
-//            StuddyBottomBarIcon(onClick = {}) {
-//                Icon(
-//                    imageVector = ImageVector.vectorResource(id = R.drawable.filter_profiles_btn),
-//                    contentDescription = "filter profiles",
-//                    modifier = Modifier.size(StuddyDimensions.iconSmall),
-//                    tint = LocalStuddyColors.current.primary700
-//                )
-//            }
-
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
                 StuddyLogoStartUpScreenSmaller()
             }
         }
 
-        SwipeCard {
-            Card(
-                shape = RoundedCornerShape(StuddyDimensions.cardRoundedRadius),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = StuddyDimensions.shadowElevation
-                ),
-                modifier = Modifier
-                    .padding(StuddyDimensions.cardPadding)
-                    .aspectRatio(StuddyDimensions.cardAspectRatio)
-            ) {
-                UserProfileCard(
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(StuddyDimensions.cardRoundedRadius)),
-                    userProfileCard = mockProfile
-                )
+        Box {
+            when (uiState) {
+                is UserRecommendationsState.Loading -> Text("Loading")
+                is UserRecommendationsState.Error -> Text("Error Processing Recommendations")
+                is UserRecommendationsState.Success -> {
+                    if ((uiState as UserRecommendationsState.Success).userRecommendations?.items?.isNotEmpty() == true)
+                        (uiState as UserRecommendationsState.Success).userRecommendations?.items?.forEach { it ->
+                            var school by remember { mutableStateOf("unknown") }
+                            var degreeProgram by remember { mutableStateOf("unknown") }
+
+                            LaunchedEffect(true) {
+                                school = viewModel.getUniversity(it.university_id ?: "null")
+                                degreeProgram =
+                                    viewModel.getDegreeProgram(it.degree_program_id ?: "null")
+                            }
+
+                            val userProfile = UserProfileSwipeDetails(
+                                name = it.given_name + " " + it.family_name,
+                                age = it.age.toString(),
+                                school = school,
+                                degreeProgram = degreeProgram,
+                                about = it.about ?: "null",
+                                academicSkills = it.user_strengths ?: listOf(),
+                                otherSkills = it.user_weaknesses ?: listOf(),
+                                profilePicture = it.display_photo_url ?: "null"
+                            )
+
+                            SwipeCard(
+                                onSwipeRight = {
+                                    viewModel.removeLastRecommendation()
+                                },
+                                onSwipeLeft = {
+                                    viewModel.removeLastRecommendation()
+                                }
+                            ) {
+                                Card(
+                                    shape = RoundedCornerShape(StuddyDimensions.cardRoundedRadius),
+                                    elevation = CardDefaults.cardElevation(
+                                        defaultElevation = StuddyDimensions.shadowElevation
+                                    ),
+                                    modifier = Modifier
+                                        .padding(StuddyDimensions.cardPadding)
+                                        .aspectRatio(StuddyDimensions.cardAspectRatio)
+                                ) {
+                                    UserProfileCard(
+                                        modifier = Modifier
+                                            .clip(shape = RoundedCornerShape(StuddyDimensions.cardRoundedRadius)),
+                                        userProfileCard = userProfile,
+                                        onAccept = {
+                                            viewModel.removeLastRecommendation()
+                                        },
+                                        onReject = {
+                                            viewModel.removeLastRecommendation()
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    else {
+                        Text(text = "Noting to Show")
+                    }
+                }
             }
         }
     }

@@ -27,3 +27,19 @@ fun ItemSkillPill(skillName : String, modifier: Modifier = Modifier){
         )
     }
 }
+
+@Composable
+fun ItemSkillPillAccent(skillName : String, modifier: Modifier = Modifier){
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(StuddyDimensions.buttonBorderRadius))
+            .background(LocalStuddyColors.current.darkNeutral600)
+            .padding(vertical = StuddyDimensions.pillTextPadding, horizontal = StuddyDimensions.pillTextPadding)
+    ) {
+        Text(
+            text = skillName,
+            color = LocalStuddyColors.current.primary900,
+            style = StuddyTypography.pXSSmaller
+        )
+    }
+}

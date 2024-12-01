@@ -36,6 +36,12 @@ val Typography = Typography(
 )
 
 object StuddyTypography {
+    val hL: TextStyle = TextStyle(
+        fontFamily = fredokaFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 40.sp,
+    )
+
     val h4: TextStyle = TextStyle(
         fontFamily = quicksandFamily,
         fontWeight = FontWeight.Bold,

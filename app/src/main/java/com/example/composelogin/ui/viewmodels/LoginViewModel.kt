@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composelogin.api.Cookie
 import com.example.composelogin.api.RetrofitClient
+import com.example.composelogin.api.Token
 import com.example.composelogin.model.LogInDataRequestModel
 import com.example.composelogin.ui.states.LoginState
 import com.example.composelogin.ui.states.LoginUiState
@@ -40,6 +41,7 @@ class LoginViewModel() : ViewModel() {
                 )
                 if (response.isSuccessful) {
                     _loginUiState.value = LoginUiState.Success(response.body()?.token ?: "")
+                    Token.token = response.body()?.token
                 } else {
                     _loginUiState.value = LoginUiState.Error("Wrong Username or Password")
                 }

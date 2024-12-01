@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -100,23 +101,31 @@ fun LoginContainer(
 
     var isError by remember { mutableStateOf(false) }
     var loginLabel by remember { mutableStateOf("Log in") }
+    var isLoading by remember { mutableStateOf(false) }
 
 
     when (uiState) {
         is LoginUiState.Loading -> {
             loginLabel = "Loading..."
+            isLoading = true
         }
+
         is LoginUiState.Error -> {
             loginLabel = "Log in"
             isError = true
+            isLoading = false
         }
+
         is LoginUiState.Success -> {
             loginLabel = "Success!"
             isError = false
+            isLoading = false
         }
+
         else -> {
             loginLabel = "Log in"
             isError = false
+            isLoading = false
         }
     }
 
@@ -174,7 +183,7 @@ fun LoginContainer(
         )
 
         if (isError) {
-            Column (
+            Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -214,14 +223,16 @@ fun LoginContainer(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
-        StuddyButtonBlue(
+        if (!isLoading)
+            StuddyButtonBlue(
 //            content = stringResource(R.string.login),
-            content = loginLabel,
-            onClick = onLoginClick
-        )
-
+                content = loginLabel,
+                onClick = onLoginClick
+            )
+        else
+            CircularProgressIndicator()
 
         Text(
             text = stringResource(R.string.or_login_using),
