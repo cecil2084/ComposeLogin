@@ -1,36 +1,40 @@
 package com.example.composelogin.ui.viewmodels
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composelogin.api.Cookie
 import com.example.composelogin.api.RetrofitClient
 import com.example.composelogin.api.Token
-import com.example.composelogin.model.LogInDataRequestModel
-import com.example.composelogin.model.UserProfileDataResponseModel
-import com.example.composelogin.ui.states.LoginUiState
+import com.example.composelogin.model.requestModels.SwipeRecommendationDataRequestModel
+import com.example.composelogin.model.responseModels.UserProfileDataResponseModel
+import com.example.composelogin.ui.states.UserMatchesState
 import com.example.composelogin.ui.states.UserProfileState
 import com.example.composelogin.ui.states.UserRecommendationsState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class HomeViewModel : ViewModel() {
     private val _userProfileState: MutableStateFlow<UserProfileState> =
         MutableStateFlow(UserProfileState())
-    val userProfileState: StateFlow<UserProfileState> get() = _userProfileState
+    val userProfileState: StateFlow<UserProfileState> = _userProfileState.asStateFlow()
 
-    val _userRecommendationState: MutableStateFlow<UserRecommendationsState> =
+    private val _userRecommendationState: MutableStateFlow<UserRecommendationsState> =
         MutableStateFlow(
             UserRecommendationsState()
         )
-    val userRecommendationState: StateFlow<UserRecommendationsState> = _userRecommendationState.asStateFlow()
+    val userRecommendationState: StateFlow<UserRecommendationsState> =
+        _userRecommendationState.asStateFlow()
+
+    private val _userMatchesState: MutableStateFlow<UserMatchesState> =
+        MutableStateFlow(UserMatchesState())
+    val userMatchesState: StateFlow<UserMatchesState> = _userMatchesState.asStateFlow()
 
     init {
         getUserProfile()
         getUserRecommendations()
+        getUserMatches()
     }
 
     private fun getUserProfile() {
@@ -79,19 +83,35 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    private fun getUserMatches() {
+        viewModelScope.launch {
+            _userMatchesState.value = UserMatchesState.Loading
+            val toke = Token.token ?: "null"
+            try {
+                val response = RetrofitClient.loginService.getUserMatched(
+                    cookie = Cookie.cookie,
+                    token = toke
+                )
+                if (response.isSuccessful) {
+                    _userMatchesState.value = UserMatchesState.Success(response.body())
+                } else {
+                    _userMatchesState.value = UserMatchesState.Error("Error Loading Matches")
+                }
+            } catch (e: Exception) {
+                _userMatchesState.value = UserMatchesState.Error(e.message?: "Unknown error")
+            }
+        }
+    }
+
     fun removeLastRecommendation() {
         _userRecommendationState.value =
             UserRecommendationsState.Success(
                 (_userRecommendationState.value as UserRecommendationsState.Success).userRecommendations?.copy(
-                    items = (_userRecommendationState.value as UserRecommendationsState.Success).userRecommendations?.items?.dropLast(1)?: listOf()
+                    items = (_userRecommendationState.value as UserRecommendationsState.Success).userRecommendations?.items?.dropLast(
+                        1
+                    ) ?: listOf()
                 )
             )
-
-//        if (_userRecommendationState.value is UserRecommendationsState.Success){
-//            (_userRecommendationState.value as UserRecommendationsState.Success).userRecommendations?.copy(
-//                items = (_userRecommendationState.value as UserRecommendationsState.Success).userRecommendations?.items?.dropLast(1)?: listOf()
-//            )
-//        }
     }
 
     suspend fun getUniversity(id: String): String {
@@ -115,6 +135,22 @@ class HomeViewModel : ViewModel() {
                 response.toString()
         } catch (e: Exception) {
             e.message ?: "Unknown Error"
+        }
+    }
+
+    fun onAcceptUser(targetId: String, isSwipedRight: Boolean) {
+        viewModelScope.launch {
+            val toke = Token.token ?: "null"
+            try {
+                val response = RetrofitClient.loginService.matchUser(
+                    matchRequest = SwipeRecommendationDataRequestModel(targetId, isSwipedRight),
+                    id = targetId,
+                    cookie = Cookie.cookie,
+                    token = toke,
+                )
+            } catch (_: Exception) {
+                // Handle Exception
+            }
         }
     }
 }

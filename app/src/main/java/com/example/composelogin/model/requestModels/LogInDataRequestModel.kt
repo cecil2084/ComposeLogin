@@ -1,4 +1,4 @@
-package com.example.composelogin.model
+package com.example.composelogin.model.requestModels
 
 import java.util.UUID
 

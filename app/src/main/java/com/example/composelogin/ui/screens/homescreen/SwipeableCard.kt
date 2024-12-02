@@ -203,6 +203,8 @@ fun UserProfileCard(
                     style = StuddyTypography.h4
                 )
 
+                Spacer(modifier = Modifier.height(8.dp))
+
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),
                     verticalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing)
@@ -219,6 +221,8 @@ fun UserProfileCard(
                     color = Color.Black,
                     style = StuddyTypography.h4
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(StuddyDimensions.pillsSpacing),

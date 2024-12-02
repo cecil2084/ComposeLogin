@@ -35,9 +35,9 @@ data class TopLevelRoute(val name: String, val route: String, @DrawableRes val i
 
 val topLevelRoutes = listOf(
     TopLevelRoute("Matches", MainNavRoutes.MATCHES, R.drawable.toga_bar),
-    TopLevelRoute("Messages", MainNavRoutes.MESSAGES, R.drawable.messages_bar),
+//    TopLevelRoute("Messages", MainNavRoutes.MESSAGES, R.drawable.messages_bar),
     TopLevelRoute("Home", MainNavRoutes.HOME, R.drawable.swipe_profiles_bar),
-    TopLevelRoute("Studdy Feed", MainNavRoutes.STUDDY_FEED, R.drawable.book),
-    TopLevelRoute("Weekly Challenge", MainNavRoutes.WEEKLY_CHALLENGES, R.drawable.weekly_challenge_bar),
+//    TopLevelRoute("Studdy Feed", MainNavRoutes.STUDDY_FEED, R.drawable.book),
+//    TopLevelRoute("Weekly Challenge", MainNavRoutes.WEEKLY_CHALLENGES, R.drawable.weekly_challenge_bar),
     TopLevelRoute("User Preferences", MainNavRoutes.USER_PREFS, R.drawable.people_bar)
 )

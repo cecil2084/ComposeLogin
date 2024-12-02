@@ -1,10 +1,7 @@
 package com.example.composelogin.ui.screens.homescreen
 
-import android.telephony.SignalStrength
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,11 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.composelogin.api.Token
-import com.example.composelogin.model.Skill
-import com.example.composelogin.model.SkillDataResponseModel
-import com.example.composelogin.model.UserProfileDataResponseModel
+import com.example.composelogin.model.responseModels.SkillDataResponseModel
+import com.example.composelogin.model.responseModels.UserProfileDataResponseModel
 import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonBlue
-import com.example.composelogin.ui.screens.styles.buttons.StuddyButtonWhite
 import com.example.composelogin.ui.screens.styles.dimensions.StuddyDimensions
 import com.example.composelogin.ui.states.UserProfileState
 import com.example.composelogin.ui.theme.LocalStuddyColors

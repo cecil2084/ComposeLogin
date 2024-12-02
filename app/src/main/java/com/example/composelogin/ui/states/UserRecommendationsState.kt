@@ -1,6 +1,6 @@
 package com.example.composelogin.ui.states
 
-import com.example.composelogin.model.UserRecommendationsDataResponseModel
+import com.example.composelogin.model.responseModels.UserRecommendationsDataResponseModel
 
 open class UserRecommendationsState {
     object Idle : UserRecommendationsState()

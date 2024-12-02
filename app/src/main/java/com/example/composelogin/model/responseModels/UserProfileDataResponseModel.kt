@@ -1,4 +1,4 @@
-package com.example.composelogin.model
+package com.example.composelogin.model.responseModels
 
 data class UserProfileDataResponseModel (
     val given_name: String? = null,

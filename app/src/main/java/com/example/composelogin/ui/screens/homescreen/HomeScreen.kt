@@ -104,60 +104,60 @@ fun MainScreenApp(
                 )
             }
 
-            composable(MainNavRoutes.MESSAGES) {
-                MessagesScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(LocalStuddyColors.current.primary700)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(
-                                bottomStart = StuddyDimensions.bottomRoundedRadius,
-                                bottomEnd = StuddyDimensions.bottomRoundedRadius
-                            )
-                        )
-                        .padding(top = 20.dp)
-                        .clip(
-                            shape = RoundedCornerShape(
-                                bottomStart = StuddyDimensions.bottomRoundedRadius,
-                                bottomEnd = StuddyDimensions.bottomRoundedRadius
-                            )
-                        )
-                        .verticalScroll(rememberScrollState())
-                )
-            }
-
-            composable(MainNavRoutes.STUDDY_FEED) {
-                StuddyFeedScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(LocalStuddyColors.current.primary700)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(
-                                bottomStart = StuddyDimensions.bottomRoundedRadius,
-                                bottomEnd = StuddyDimensions.bottomRoundedRadius
-                            )
-                        )
-                        .padding(top = 20.dp)
-                )
-            }
-
-            composable(MainNavRoutes.WEEKLY_CHALLENGES) {
-                WeeklyChallengeScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(LocalStuddyColors.current.primary700)
-                        .background(
-                            color = Color.White,
-                            shape = RoundedCornerShape(
-                                bottomStart = StuddyDimensions.bottomRoundedRadius,
-                                bottomEnd = StuddyDimensions.bottomRoundedRadius
-                            )
-                        )
-                        .padding(top = 20.dp)
-                )
-            }
+//            composable(MainNavRoutes.MESSAGES) {
+//                MessagesScreen(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .background(LocalStuddyColors.current.primary700)
+//                        .background(
+//                            color = Color.White,
+//                            shape = RoundedCornerShape(
+//                                bottomStart = StuddyDimensions.bottomRoundedRadius,
+//                                bottomEnd = StuddyDimensions.bottomRoundedRadius
+//                            )
+//                        )
+//                        .padding(top = 20.dp)
+//                        .clip(
+//                            shape = RoundedCornerShape(
+//                                bottomStart = StuddyDimensions.bottomRoundedRadius,
+//                                bottomEnd = StuddyDimensions.bottomRoundedRadius
+//                            )
+//                        )
+//                        .verticalScroll(rememberScrollState())
+//                )
+//            }
+//
+//            composable(MainNavRoutes.STUDDY_FEED) {
+//                StuddyFeedScreen(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .background(LocalStuddyColors.current.primary700)
+//                        .background(
+//                            color = Color.White,
+//                            shape = RoundedCornerShape(
+//                                bottomStart = StuddyDimensions.bottomRoundedRadius,
+//                                bottomEnd = StuddyDimensions.bottomRoundedRadius
+//                            )
+//                        )
+//                        .padding(top = 20.dp)
+//                )
+//            }
+//
+//            composable(MainNavRoutes.WEEKLY_CHALLENGES) {
+//                WeeklyChallengeScreen(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .background(LocalStuddyColors.current.primary700)
+//                        .background(
+//                            color = Color.White,
+//                            shape = RoundedCornerShape(
+//                                bottomStart = StuddyDimensions.bottomRoundedRadius,
+//                                bottomEnd = StuddyDimensions.bottomRoundedRadius
+//                            )
+//                        )
+//                        .padding(top = 20.dp)
+//                )
+//            }
 
             composable(MainNavRoutes.USER_PREFS) {
                 UserPrefsScreen(
@@ -227,8 +227,8 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMod
                 is UserRecommendationsState.Success -> {
                     if ((uiState as UserRecommendationsState.Success).userRecommendations?.items?.isNotEmpty() == true)
                         (uiState as UserRecommendationsState.Success).userRecommendations?.items?.forEachIndexed() {index, it ->
-                            var school by remember { mutableStateOf("unknown") }
-                            var degreeProgram by remember { mutableStateOf("unknown") }
+                            var school by remember { mutableStateOf("Loading...") }
+                            var degreeProgram by remember { mutableStateOf("Loading...") }
 
                             LaunchedEffect(true) {
                                 school = viewModel.getUniversity(it.university_id ?: "null")
@@ -269,9 +269,11 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel = viewMod
                                             .clip(shape = RoundedCornerShape(StuddyDimensions.cardRoundedRadius)),
                                         userProfileCard = userProfile,
                                         onAccept = {
+                                            viewModel.onAcceptUser(it.id?: "null", true)
                                             viewModel.removeLastRecommendation()
                                         },
                                         onReject = {
+                                            viewModel.onAcceptUser(it.id?: "null", false)
                                             viewModel.removeLastRecommendation()
                                         }
                                     )

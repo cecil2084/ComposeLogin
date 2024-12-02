@@ -1,7 +1,4 @@
-package com.example.composelogin.model
-
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
+package com.example.composelogin.model.responseModels
 
 data class UserRecommendationsDataResponseModel (
     val page_number: Int,

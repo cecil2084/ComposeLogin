@@ -1,6 +1,4 @@
-package com.example.composelogin.model
-
-import android.provider.ContactsContract.CommonDataKinds.Website
+package com.example.composelogin.model.responseModels
 
 data class UniversitiesResponseModel(
     val address: String,

@@ -1,6 +1,6 @@
 package com.example.composelogin.model
 
-import androidx.annotation.DrawableRes
+import com.example.composelogin.model.responseModels.SkillDataResponseModel
 
 data class UserProfileSwipeDetails(
     val profilePicture: String,

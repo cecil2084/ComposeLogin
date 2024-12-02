@@ -5,13 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.composelogin.api.Cookie
 import com.example.composelogin.api.RetrofitClient
 import com.example.composelogin.api.Token
-import com.example.composelogin.model.LogInDataRequestModel
+import com.example.composelogin.model.requestModels.LogInDataRequestModel
 import com.example.composelogin.ui.states.LoginState
 import com.example.composelogin.ui.states.LoginUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -50,5 +49,4 @@ class LoginViewModel() : ViewModel() {
             }
         }
     }
-
 }
